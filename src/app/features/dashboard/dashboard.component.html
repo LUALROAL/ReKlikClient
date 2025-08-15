@@ -1,0 +1,20 @@
+<!-- dashboard.component.html -->
+<div class="dashboard-container">
+  <div class="dashboard-header">
+    <h1>Bienvenido al Dashboard</h1>
+    <button (click)="logout()" class="logout-button">
+      <span>Cerrar Sesión</span>
+    </button>
+  </div>
+
+  <div class="user-info-card">
+    <h2>Información del Usuario</h2>
+
+    <div class="user-details">
+      <p><strong>Nombre:</strong> {{ user?.name }}</p>
+      <p><strong>Email:</strong> {{ user?.email }}</p>
+      <p><strong>Tipo de usuario:</strong> {{ user?.userType }}</p>
+      <p><strong>Teléfono:</strong> {{ user?.phone }}</p>
+    </div>
+  </div>
+</div>

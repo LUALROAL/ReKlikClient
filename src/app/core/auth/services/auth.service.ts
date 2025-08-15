@@ -13,6 +13,14 @@ interface LoginResponse {
     // otras propiedades del usuario que devuelva tu backend
   };
 }
+interface User {
+  id: number;
+  name: string;
+  email: string;
+  userType: string;
+  phone: string;
+  createdAt: string;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -22,7 +30,7 @@ export class AuthService {
   isAuthenticated = signal(false);
   currentUser = signal<any>(null);
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient, private router: Router) { }
 
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/auth/login`, credentials).pipe(
@@ -36,12 +44,18 @@ export class AuthService {
     );
   }
 
- private handleAuthentication(response: LoginResponse): void {
+  private handleAuthentication(response: LoginResponse): void {
     localStorage.setItem('token', response.token);
     localStorage.setItem('user', JSON.stringify(response.user));
     this.currentUser.set(response.user);
     this.isAuthenticated.set(true);
     this.router.navigate(['/dashboard']);
+  }
+
+  //  método para obtener el usuario actual
+  getCurrentUser(): User | null {
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
   }
 
   private handleLoginError(error: any): void {
@@ -58,11 +72,14 @@ export class AuthService {
     return this.http.post(`${this.API_URL}/auth/register`, userData);
   }
 
-  logout() {
-    localStorage.removeItem('token');
-    this.isAuthenticated.set(false);
-    this.router.navigate(['/auth/login']);
-  }
+ // auth.service.ts
+logout() {
+  localStorage.removeItem('token');
+  localStorage.removeItem('user');
+  this.isAuthenticated.set(false);
+  this.currentUser.set(null);
+  this.router.navigate(['/auth/login']);
+}
 
   checkAuthentication() {
     const token = localStorage.getItem('token');
