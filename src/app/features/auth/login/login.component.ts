@@ -11,116 +11,113 @@ import { of } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <div class="auth-container">
-      <h2>Iniciar Sesión</h2>
+    <section class="py-4 md:py-8 bg-warm-white">
+      <div class="flex flex-col items-center justify-center px-6 py-8 mx-auto md:h-screen lg:py-0">
+        <a href="/" class="flex items-center mb-6 text-2xl font-semibold text-secondary">
+          <img class="w-28 h-28 mr-2" [src]="logoPath" alt="ReKlik logo">
+          <!-- ReKlik -->
+        </a>
 
-      <!-- Mensaje de error -->
-      @if (errorMessage()) {
-        <div class="error-message">{{ errorMessage() }}</div>
-      }
+        <div class="w-full bg-pure-white rounded-lg shadow-md md:mt-0 sm:max-w-md xl:p-0 border border-gray-100">
+          <div class="p-6 space-y-4 md:space-y-6 sm:p-8">
+            <h1 class="text-xl font-bold leading-tight tracking-tight text-secondary md:text-2xl">
+              Iniciar sesión en tu cuenta
+            </h1>
 
-      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label for="email">Email</label>
-          <input
-            id="email"
-            type="email"
-            formControlName="email"
-            [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
-            <div class="error">Email es requerido y debe ser válido</div>
-          }
+            <!-- Botón de Google -->
+            <button class="w-full flex items-center justify-center py-2.5 px-5 text-sm font-medium text-gray-900 bg-white rounded-lg border border-gray-200 hover:bg-gray-100">
+              <svg class="w-5 h-5 mr-2" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <g clip-path="url(#clip0_13183_10121)">
+                  <path d="M20.3081 10.2303C20.3081 9.55056 20.253 8.86711 20.1354 8.19836H10.7031V12.0492H16.1046C15.8804 13.2911 15.1602 14.3898 14.1057 15.0879V17.5866H17.3282C19.2205 15.8449 20.3081 13.2728 20.3081 10.2303Z" fill="#3F83F8"></path>
+                  <path d="M10.7019 20.0006C13.3989 20.0006 15.6734 19.1151 17.3306 17.5865L14.1081 15.0879C13.2115 15.6979 12.0541 16.0433 10.7056 16.0433C8.09669 16.0433 5.88468 14.2832 5.091 11.9169H1.76562V14.4927C3.46322 17.8695 6.92087 20.0006 10.7019 20.0006V20.0006Z" fill="#34A853"></path>
+                  <path d="M5.08857 11.9169C4.66969 10.6749 4.66969 9.33008 5.08857 8.08811V5.51233H1.76688C0.348541 8.33798 0.348541 11.667 1.76688 14.4927L5.08857 11.9169V11.9169Z" fill="#FBBC04"></path>
+                  <path d="M10.7019 3.95805C12.1276 3.936 13.5055 4.47247 14.538 5.45722L17.393 2.60218C15.5852 0.904587 13.1858 -0.0287217 10.7019 0.000673888C6.92087 0.000673888 3.46322 2.13185 1.76562 5.51234L5.08732 8.08813C5.87733 5.71811 8.09302 3.95805 10.7019 3.95805V3.95805Z" fill="#EA4335"></path>
+                </g>
+              </svg>
+              Continuar con Google
+            </button>
+
+            <div class="flex items-center">
+              <div class="w-full h-0.5 bg-gray-200"></div>
+              <div class="px-5 text-center text-gray-500">o</div>
+              <div class="w-full h-0.5 bg-gray-200"></div>
+            </div>
+
+            @if (errorMessage()) {
+              <div class="p-4 text-sm text-red-700 bg-red-100 rounded-lg">
+                {{ errorMessage() }}
+              </div>
+            }
+
+            <form class="space-y-4 md:space-y-6" [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+              <div>
+                <label for="email" class="block mb-2 text-sm font-medium text-secondary">Tu email</label>
+                <input
+                  type="email"
+                  id="email"
+                  formControlName="email"
+                  placeholder="nombre@empresa.com"
+                  class="bg-gray-50 border border-gray-300 text-secondary sm:text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
+                  [class.border-red-300]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                @if (loginForm.get('email')?.invalid && loginForm.get('email')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">Email es requerido y debe ser válido</p>
+                }
+              </div>
+
+              <div>
+                <label for="password" class="block mb-2 text-sm font-medium text-secondary">Contraseña</label>
+                <input
+                  type="password"
+                  id="password"
+                  formControlName="password"
+                  placeholder="••••••••"
+                  class="bg-gray-50 border border-gray-300 text-secondary sm:text-sm rounded-lg focus:ring-primary focus:border-primary block w-full p-2.5"
+                  [class.border-red-300]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
+                @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
+                  <p class="mt-2 text-sm text-red-600">Contraseña es requerida (mínimo 6 caracteres)</p>
+                }
+              </div>
+
+              <div class="flex items-center justify-between">
+                <div class="flex items-start">
+                  <div class="flex items-center h-5">
+                    <input id="remember" type="checkbox" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-primary">
+                  </div>
+                  <div class="ml-3 text-sm">
+                    <label for="remember" class="text-gray-500">Recordarme</label>
+                  </div>
+                </div>
+                <a href="#" class="text-sm font-medium text-primary hover:underline">¿Olvidaste tu contraseña?</a>
+              </div>
+
+              <button
+                type="submit"
+                class="w-full text-white bg-primary hover:bg-primary-dark focus:ring-4 focus:outline-none focus:ring-primary-light font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+                [disabled]="loginForm.invalid || loading()">
+                @if (loading()) {
+                  <span>Procesando...</span>
+                } @else {
+                  <span>Iniciar sesión</span>
+                }
+              </button>
+
+              <p class="text-sm font-light text-gray-500">
+                ¿No tienes cuenta? <a routerLink="/auth/register" class="font-medium text-primary hover:underline">Regístrate aquí</a>
+              </p>
+            </form>
+          </div>
         </div>
-
-        <div class="form-group">
-          <label for="password">Contraseña</label>
-          <input
-            id="password"
-            type="password"
-            formControlName="password"
-            [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          @if (loginForm.get('password')?.invalid && loginForm.get('password')?.touched) {
-            <div class="error">Contraseña es requerida (mínimo 6 caracteres)</div>
-          }
-        </div>
-
-        <button type="submit" [disabled]="loginForm.invalid || loading()">
-          @if (loading()) {
-            <span>Procesando...</span>
-          } @else {
-            <span>Ingresar</span>
-          }
-        </button>
-      </form>
-
-      <p>¿No tienes cuenta? <a routerLink="/auth/register">Regístrate aquí</a></p>
-    </div>
+      </div>
+    </section>
   `,
-  styles: [`
-    .auth-container {
-      max-width: 400px;
-      margin: 2rem auto;
-      padding: 2rem;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
-
-    .form-group {
-      margin-bottom: 1rem;
-    }
-
-    label {
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-
-    input {
-      width: 100%;
-      padding: 0.5rem;
-      border: 1px solid #ddd;
-      border-radius: 4px;
-    }
-
-    input.invalid {
-      border-color: #f44336;
-    }
-
-    .error {
-      color: #f44336;
-      font-size: 0.8rem;
-      margin-top: 0.25rem;
-    }
-
-    .error-message {
-      color: #f44336;
-      background-color: #fdd;
-      padding: 0.5rem;
-      border-radius: 4px;
-      margin-bottom: 1rem;
-    }
-
-    button {
-      background: #3f51b5;
-      color: white;
-      padding: 0.5rem 1rem;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin-top: 1rem;
-    }
-
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
-    }
-  `]
+  styles: []
 })
 export class LoginComponent {
   loading = signal(false);
   errorMessage = signal<string | null>(null);
 
-  loginForm: ReturnType<FormBuilder['group']>;
-
+  loginForm;
+logoPath = 'assets/images/LOGO.png'; // Path to your logo image
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -152,7 +149,6 @@ export class LoginComponent {
     ).subscribe(response => {
       if (response) {
         console.log('Login exitoso', response);
-        // La navegación ya la maneja el AuthService
       }
     });
   }

@@ -1,40 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-// Custom Theming for Angular Material
-// For more information: https://material.angular.io/guide/theming
-@use '@angular/material' as mat;
-// Plus imports for other components in your app.
-
-// Include the common styles for Angular Material. We include this here so that you only
-// have to load a single css file for Angular Material in your app.
-// Be sure that you only ever include this mixin once!
-@include mat.core();
-
-// Define the theme object.
-$ReklikClient-theme: mat.define-theme((
-  color: (
-    theme-type: light,
-    primary: mat.$azure-palette,
-    tertiary: mat.$blue-palette,
-  ),
-  density: (
-    scale: 0,
-  )
-));
-
-// Include theme styles for core and each component used in your app.
-// Alternatively, you can import and @include the theme mixins for each component
-// that you are using.
 :root {
-  @include mat.all-component-themes($ReklikClient-theme);
+  --color-primary: #009841;
+  --color-primary-light: #00a847;
+  --color-primary-dark: #00853a;
+
+  --color-secondary: #00222B;
+  --color-secondary-light: #00303d;
+  --color-secondary-dark: #00141a;
+
+  --color-warm-white: #FFFBEF;
+  --color-pure-white: #FFFFF7;
 }
 
-// Comment out the line below if you want to use the pre-defined typography utility classes.
-// For more information: https://material.angular.io/guide/typography#using-typography-styles-in-your-application.
-// @include mat.typography-hierarchy($ReklikClient-theme);
+/* Estilos base */
+body {
+  @apply bg-warm-white text-secondary;
+  font-family: 'Inter', sans-serif;
+}
 
-// Comment out the line below if you want to use the deprecated `color` inputs.
-// @include mat.color-variants-backwards-compatibility($ReklikClient-theme);
-/* You can add global styles to this file, and also import other style files */
+/* Componentes personalizados */
+.btn-primary {
+  @apply bg-primary text-pure-white hover:bg-primary-dark transition-colors duration-300;
+}
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+.card {
+  @apply bg-pure-white rounded-lg shadow-md border border-gray-100;
+}
