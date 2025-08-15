@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiUrl: 'http://localhost:3000' // URL de tu API en desarrollo
+  apiUrl: 'http://localhost:5126/api' // URL de tu API en desarrollo
 };

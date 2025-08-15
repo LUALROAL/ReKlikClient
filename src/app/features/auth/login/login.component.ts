@@ -1,7 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/auth/services/auth.service';
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -10,6 +13,11 @@ import { CommonModule } from '@angular/common';
   template: `
     <div class="auth-container">
       <h2>Iniciar Sesión</h2>
+
+      <!-- Mensaje de error -->
+      @if (errorMessage()) {
+        <div class="error-message">{{ errorMessage() }}</div>
+      }
 
       <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
         <div class="form-group">
@@ -83,6 +91,14 @@ import { CommonModule } from '@angular/common';
       margin-top: 0.25rem;
     }
 
+    .error-message {
+      color: #f44336;
+      background-color: #fdd;
+      padding: 0.5rem;
+      border-radius: 4px;
+      margin-bottom: 1rem;
+    }
+
     button {
       background: #3f51b5;
       color: white;
@@ -101,34 +117,43 @@ import { CommonModule } from '@angular/common';
 })
 export class LoginComponent {
   loading = signal(false);
+  errorMessage = signal<string | null>(null);
 
   loginForm: ReturnType<FormBuilder['group']>;
 
-  constructor(private fb: FormBuilder) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router
+  ) {
     this.loginForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
     });
   }
 
-  async onSubmit() {
+  onSubmit() {
     if (this.loginForm.invalid) return;
 
+    this.errorMessage.set(null);
     this.loading.set(true);
 
-    try {
-      // Aquí iría la llamada al servicio de autenticación
-      // await this.authService.login(this.loginForm.value);
-      // this.router.navigate(['/dashboard']);
+    const credentials = {
+      email: this.loginForm.value.email!,
+      password: this.loginForm.value.password!
+    };
 
-      // Simulamos una llamada asíncrona
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      console.log('Login exitoso', this.loginForm.value);
-    } catch (error) {
-      console.error('Error en login', error);
-    } finally {
-      this.loading.set(false);
-    }
+    this.authService.login(credentials).pipe(
+      catchError(error => {
+        this.errorMessage.set(error.message || 'Error desconocido al iniciar sesión');
+        return of(null);
+      }),
+      finalize(() => this.loading.set(false))
+    ).subscribe(response => {
+      if (response) {
+        console.log('Login exitoso', response);
+        // La navegación ya la maneja el AuthService
+      }
+    });
   }
 }
