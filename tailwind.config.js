@@ -8,26 +8,35 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          DEFAULT: '#009841',
-          light: '#00a847',
-          dark: '#00853a'
+          DEFAULT: 'var(--color-primary)',
+          light: 'var(--color-primary-light)',
+          dark: 'var(--color-primary-dark)'
         },
         secondary: {
-          DEFAULT: '#00222B',
-          light: '#00303d',
-          dark: '#00141a'
+          DEFAULT: 'var(--color-secondary)',
+          light: 'var(--color-secondary-light)',
+          dark: 'var(--color-secondary-dark)'
+        },
+        accent: {
+          DEFAULT: 'var(--color-accent)',
+          light: 'var(--color-accent-light)',
+          dark: 'var(--color-accent-dark)'
         },
         warm: {
-          white: '#FFFBEF'
+          white: 'var(--color-warm-white)'
         },
         pure: {
-          white: '#FFFFF7'
+          white: 'var(--color-pure-white)'
         }
       },
-      backgroundColor: {
-        base: '#FFFBEF'
+      fontFamily: {
+        sans: ['Inter', 'sans-serif']
+      },
+      boxShadow: {
+        'soft': '0 4px 20px rgba(0, 34, 43, 0.1)',
+        'glow-primary': '0 0 15px rgba(0, 152, 65, 0.3)'
       }
-    }
+    },
   },
   plugins: [],
 }
