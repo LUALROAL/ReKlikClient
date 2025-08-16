@@ -11,20 +11,20 @@ import { of } from 'rxjs';
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, RouterLink],
   template: `
-    <section class="min-h-screen bg-warm-white flex items-center justify-center p-4">
-      <div class="w-full max-w-md">
+    <section  class="min-h-screen bg-secondary flex items-center justify-center p-4">
+      <div class="w-full max-w-md bg-warm-white rounded-xl shadow-lg overflow-hidden">
         <!-- Logo y título -->
-        <div class="text-center mb-3">
-          <img [src]="logoPath" alt="ReKlik Logo" class="w-32 mx-auto mb-4">
-          <!-- <h1 class="text-2xl font-bold text-secondary">Bienvenido a ReKlik</h1> -->
-        </div>
+        <div class="bg-warm p-3 text-center">
+  <img [src]="logoPath" alt="ReKlik Logo" class="w-32 mx-auto mb-2">
+  <!-- <h1 class="text-xl font-bold text-warm-white">Bienvenido a ReKlik</h1> -->
+</div>
 
         <!-- Tarjeta del formulario -->
-        <div class="card p-6 md:p-8">
+        <div class="card p-6 md:p-8 bg-warm">
           <h2 class="text-xl font-semibold text-secondary mb-6">Iniciar sesión</h2>
 
           <!-- Botón de Google -->
-          <button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg border border-gray-200 hover:bg-gray-50 mb-6 transition-colors">
+          <button class="w-full flex items-center justify-center gap-2 py-2.5 px-4 text-sm font-medium rounded-lg border border-gray-300 text-secondary hover:bg-gray-50 mb-6 transition-colors">
             <svg class="w-5 h-5" viewBox="0 0 21 20" fill="none" xmlns="http://www.w3.org/2000/svg">
               <!-- Icono de Google -->
               <g clip-path="url(#clip0_13183_10121)">
@@ -46,9 +46,9 @@ import { of } from 'rxjs';
 
           <!-- Mensaje de error -->
           @if (errorMessage()) {
-            <div class="bg-red-50 text-red-700 p-3 rounded-lg mb-4 text-sm">
-              {{ errorMessage() }}
-            </div>
+            <div class="bg-red-100 text-red-700 p-3 rounded-lg mb-4 text-sm border border-red-200">
+  {{ errorMessage() }}
+</div>
           }
 
           <!-- Formulario -->
@@ -96,16 +96,13 @@ import { of } from 'rxjs';
             </div>
 
             <!-- Botón de submit -->
-            <button
-              type="submit"
-              class="btn-primary w-full py-3 mt-4"
-              [disabled]="loginForm.invalid || loading()">
-              @if (loading()) {
-                <span>Iniciando sesión...</span>
-              } @else {
-                <span>Iniciar sesión</span>
-              }
-            </button>
+            <button type="submit" class="w-full py-3 mt-4 uppercase font-bold text-xs rounded-[40px] text-secondary bg-gradient-to-r from-primary to-accent hover:from-primary-dark hover:to-accent-dark transition-colors duration-300">
+  @if (loading()) {
+    <span>Iniciando sesión...</span>
+  } @else {
+    <span>Iniciar sesión</span>
+  }
+</button>
           </form>
 
           <!-- Enlace a registro -->
