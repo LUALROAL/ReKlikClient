@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/auth/guards/auth.guard';
 import { AdminGuard } from './core/auth/guards/adminGuard';
-import { AdminDashboardComponent } from './features/admin/admin-dashboard/admin-dashboard.component';
+import { ADMIN_ROUTES } from './features/admin/admin.routes';
 
 export const routes: Routes = [
   {
@@ -19,7 +19,8 @@ export const routes: Routes = [
   },
   {
     path: 'admin-dashboard',
-    loadComponent: () => import('./features/admin/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
-    canActivate: [AuthGuard, AdminGuard]
-  }
+    children: ADMIN_ROUTES, // Usamos las rutas definidas para admin
+    canActivate: [AuthGuard, AdminGuard] // Protegemos toda el área de admin
+  },
+  { path: '**', redirectTo: '' }
 ];

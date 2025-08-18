@@ -1,1 +1,301 @@
-<h2>HOLA</h2>
+<div class="min-h-screen bg-warm-white">
+  <!-- Header del Dashboard -->
+  <header class="bg-secondary text-warm-white shadow-md">
+    <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+      <div class="flex items-center gap-3">
+        <img src="assets/images/LOGO.png" alt="ReKlik Logo" class="w-10 h-10">
+        <h1 class="text-xl font-bold italic">
+          <span class="text-primary">Re</span><span class="text-accent">Klik</span> Admin
+        </h1>
+      </div>
+
+      <div class="flex items-center gap-4">
+        <div class="hidden md:flex items-center gap-2">
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
+            <span class="text-warm-white font-bold">A</span>
+          </div>
+          <span class="font-medium">Administrador</span>
+        </div>
+        <button (click)="logout()"
+          class="logout-button flex items-center gap-2 px-4 py-2 rounded-lg bg-primary hover:bg-primary-dark transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd"
+              d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
+              clip-rule="evenodd" />
+          </svg>
+          <span class="hidden md:inline">Cerrar Sesión</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="container mx-auto px-4 py-8">
+    <!-- Sección de bienvenida -->
+    <section class="mb-10">
+      <h2 class="text-3xl font-bold text-secondary mb-2">Panel de Administración</h2>
+      <p class="text-secondary-light">Estadísticas globales del sistema de reciclaje</p>
+
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mt-6">
+        <!-- Tarjeta de usuarios -->
+        <div class="card bg-gradient-to-r from-primary to-primary-dark p-6 rounded-xl text-warm-white shadow-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-medium">Usuarios Registrados</h3>
+              <p class="text-3xl font-bold mt-2">{{ stats?.total_users || '0' }}</p>
+            </div>
+            <div class="bg-accent-dark rounded-full p-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex justify-between text-xs">
+              <span>Recicladores: {{ stats?.recycler_users || '0' }}</span>
+              <span>Ciudadanos: {{ stats?.citizen_users || '0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de productos -->
+        <div class="card bg-gradient-to-r from-secondary to-secondary-dark p-6 rounded-xl text-warm-white shadow-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-medium">Productos Registrados</h3>
+              <p class="text-3xl font-bold mt-2">{{ stats?.total_products || '0' }}</p>
+            </div>
+            <div class="bg-primary-dark rounded-full p-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex justify-between text-xs">
+              <span>Códigos: {{ stats?.total_codes || '0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de escaneos -->
+        <div class="card bg-gradient-to-r from-accent to-accent-dark p-6 rounded-xl text-secondary shadow-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-medium">Escaneos Totales</h3>
+              <p class="text-3xl font-bold mt-2">{{ stats?.total_scans || '0' }}</p>
+            </div>
+            <div class="bg-secondary rounded-full p-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 4h10a2 2 0 012 2v12a2 2 0 01-2 2H7a2 2 0 01-2-2V6a2 2 0 012-2z M10 9h4m-4 4h4m-4 4h4" />
+              </svg>
+            </div>
+
+          </div>
+          <div class="mt-4">
+            <div class="flex justify-between text-xs">
+              <span>Reciclaje: {{ stats?.recycling_scans || '0' }}</span>
+              <span>Primeros: {{ stats?.first_scans || '0' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de empresas -->
+        <div class="card bg-gradient-to-r from-primary-light to-primary p-6 rounded-xl text-warm-white shadow-lg">
+          <div class="flex justify-between items-start">
+            <div>
+              <h3 class="text-lg font-medium">Empresas</h3>
+              <p class="text-3xl font-bold mt-2">{{ stats?.total_companies || '0' }}</p>
+            </div>
+            <div class="bg-accent rounded-full p-3">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex justify-between text-xs">
+              <span>Productos: {{ stats?.avg_products_per_company || '0' }}/empresa</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de estadísticas -->
+    <section class="mb-10">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-secondary">Estadísticas de Reciclaje</h2>
+        <div class="flex gap-2">
+          <select [(ngModel)]="timeRange" class="border border-gray-300 rounded-lg px-3 py-1 text-sm">
+            <option value="week">Última semana</option>
+            <option value="month">Último mes</option>
+            <option value="year">Último año</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Gráfico de materiales -->
+        <div class="card p-6 rounded-xl shadow-sm lg:col-span-2">
+          <h3 class="text-lg font-medium text-secondary mb-4">Distribución por Material</h3>
+          <div class="h-64">
+            <canvas #materialsChart></canvas>
+          </div>
+        </div>
+
+        <!-- Top empresas -->
+        <div class="card p-6 rounded-xl shadow-sm">
+          <h3 class="text-lg font-medium text-secondary mb-4">Top 5 Empresas</h3>
+          <div class="space-y-4">
+            <div *ngFor="let company of topCompanies" class="flex items-center justify-between">
+              <div class="flex items-center gap-3">
+                <div
+                  class="w-8 h-8 rounded-full bg-primary-light text-warm-white flex items-center justify-center text-xs font-bold">
+                  {{ company.name.charAt(0) }}
+                </div>
+                <span class="text-sm font-medium text-secondary">{{ company.name }}</span>
+              </div>
+              <span class="text-sm text-secondary">{{ company.products }} productos</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección de gestión -->
+    <section class="mb-10">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-secondary">Gestión del Sistema</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <button (click)="navigateTo('companies')"
+          class="dashboard-card bg-pure-white p-4 rounded-lg shadow-sm border border-gray-100 hover:border-primary transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-primary-light text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            </div>
+            <span class="font-medium text-secondary">Empresas</span>
+          </div>
+          <p class="text-xs text-secondary-light mt-2">Gestiona empresas fabricantes</p>
+        </button>
+
+        <button (click)="navigateTo('products')"
+          class="dashboard-card bg-pure-white p-4 rounded-lg shadow-sm border border-gray-100 hover:border-primary transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-primary-light text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+              </svg>
+            </div>
+            <span class="font-medium text-secondary">Productos</span>
+          </div>
+          <p class="text-xs text-secondary-light mt-2">Administra productos reciclables</p>
+        </button>
+
+        <button (click)="navigateTo('users')"
+          class="dashboard-card bg-pure-white p-4 rounded-lg shadow-sm border border-gray-100 hover:border-primary transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-primary-light text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+            <span class="font-medium text-secondary">Usuarios</span>
+          </div>
+          <p class="text-xs text-secondary-light mt-2">Administra usuarios del sistema</p>
+        </button>
+
+        <button (click)="navigateTo('scans')"
+          class="dashboard-card bg-pure-white p-4 rounded-lg shadow-sm border border-gray-100 hover:border-primary transition-colors">
+          <div class="flex items-center gap-3">
+            <div class="p-2 rounded-lg bg-primary-light text-primary">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10" />
+              </svg>
+            </div>
+            <span class="font-medium text-secondary">Escaneos</span>
+          </div>
+          <p class="text-xs text-secondary-light mt-2">Monitoriza actividad de escaneos</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- Últimos escaneos -->
+    <section>
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-2xl font-bold text-secondary">Actividad Reciente</h2>
+        <button (click)="navigateTo('scans')" class="text-primary hover:text-primary-dark font-medium">
+          Ver todos
+        </button>
+      </div>
+
+      <div class="overflow-x-auto">
+        <table class="min-w-full bg-pure-white rounded-xl overflow-hidden shadow-sm">
+          <thead class="bg-secondary text-warm-white">
+            <tr>
+              <th class="py-3 px-4 text-left text-sm font-medium">Fecha</th>
+              <th class="py-3 px-4 text-left text-sm font-medium">Usuario</th>
+              <th class="py-3 px-4 text-left text-sm font-medium">Producto</th>
+              <th class="py-3 px-4 text-left text-sm font-medium">Empresa</th>
+              <th class="py-3 px-4 text-left text-sm font-medium">Tipo</th>
+              <th class="py-3 px-4 text-left text-sm font-medium">Ubicación</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr *ngFor="let scan of recentScans">
+              <td class="py-3 px-4 text-sm text-secondary">{{ scan.scanned_at | date:'short' }}</td>
+              <td class="py-3 px-4 text-sm text-secondary">{{ scan.user_name }}</td>
+              <td class="py-3 px-4 text-sm text-secondary">{{ scan.product_name }}</td>
+              <td class="py-3 px-4 text-sm text-secondary">{{ scan.company_name }}</td>
+              <td class="py-3 px-4 text-sm text-secondary">
+                <span [ngClass]="{
+                  'bg-green-100 text-green-800': scan.scan_type === 'reciclaje',
+                  'bg-blue-100 text-blue-800': scan.scan_type === 'primero',
+                  'bg-gray-100 text-gray-800': scan.scan_type === 'otros'
+                }" class="px-2 py-1 text-xs rounded-full capitalize">
+                  {{ scan.scan_type }}
+                </span>
+              </td>
+              <td class="py-3 px-4 text-sm text-secondary">{{ scan.scan_city }}, {{ scan.scan_country }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-secondary text-warm-white py-6 mt-10">
+    <div class="container mx-auto px-4">
+      <div class="flex flex-col md:flex-row justify-between items-center">
+        <div class="flex items-center gap-3 mb-4 md:mb-0">
+          <img src="assets/images/LOGO.png" alt="ReKlik Logo" class="w-8 h-8">
+          <span class="font-bold italic">
+            <span class="text-primary">Re</span><span class="text-accent">Klik</span> Admin
+          </span>
+        </div>
+        <p class="text-sm">© 2023 ReKlik - Panel de Administración. Todos los derechos reservados.</p>
+      </div>
+    </div>
+  </footer>
+</div>
