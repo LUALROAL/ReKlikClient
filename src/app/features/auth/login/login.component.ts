@@ -3,7 +3,7 @@ import { ReactiveFormsModule, FormBuilder, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/auth/services/auth.service';
-import { catchError, finalize } from 'rxjs/operators';
+import { catchError, delay, finalize, switchMap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { LoadingComponent } from '../../../shared/loading/loading.component';
 
@@ -162,29 +162,29 @@ export class LoginComponent {
 );
 
   }
-  onSubmit() {
-    if (this.loginForm.invalid) return;
+onSubmit() {
+  if (this.loginForm.invalid) return;
 
-    this.errorMessage.set(null);
-    this.loading.set(true);
+  this.errorMessage.set(null);
+  this.loading.set(true);
 
-    const credentials = {
-      email: this.loginForm.value.email!,
-      password: this.loginForm.value.password!
-    };
+  const credentials = {
+    email: this.loginForm.value.email!,
+    password: this.loginForm.value.password!
+  };
 
     this.authService.login(credentials).pipe(
-      catchError(error => {
-        this.errorMessage.set(error.message || 'Error al iniciar sesión');
-        return of(null);
-      }),
-      finalize(() => this.loading.set(false))
-    ).subscribe(response => {
-      if (response) {
-        console.log('Login exitoso', response);
-      }
-    });
-  }
+    catchError(error => {
+      this.errorMessage.set(error.message || 'Error al iniciar sesión');
+      return of(null);
+    }),
+    finalize(() => this.loading.set(false))
+  ).subscribe(response => {
+    if (response) {
+      console.log('✅ Login exitoso', response);
+    }
+  });
+}
 
   private handleGoogleLogin(idToken: string) {
   this.authService.googleLogin(idToken).subscribe({
