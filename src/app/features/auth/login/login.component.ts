@@ -5,6 +5,7 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { catchError, finalize } from 'rxjs/operators';
 import { of } from 'rxjs';
+import { LoadingComponent } from '../../../shared/loading/loading.component';
 
 declare const google: any;
 
@@ -12,8 +13,10 @@ declare const google: any;
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, LoadingComponent],
   template: `
+  <app-loading *ngIf="loading()"></app-loading>
+
     <section  class="min-h-screen bg-secondary flex items-center justify-center p-4">
       <div class="w-full max-w-md bg-warm-white rounded-xl shadow-lg overflow-hidden">
         <!-- Logo y título -->
