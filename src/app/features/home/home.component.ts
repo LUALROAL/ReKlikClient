@@ -1,12 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { LoadingComponent } from '../../shared/loading/loading.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, LoadingComponent],
   template: `
+  <app-loading *ngIf="loading()"></app-loading>
     <section class="bg-secondary overflow-hidden pb-9 px-4 md:px-8">
     <header class="flex mx-auto justify-between items-center max-w-[1300px] py-4">
         <div class="flex items-center gap-3">
@@ -260,11 +262,18 @@ import { CommonModule } from '@angular/common';
   `
 })
 export class HomeComponent {
-    isMenuOpen = false;
+  isMenuOpen = false;
   currentSlide = 0;
   totalSlides = 3;
+  loading = signal(true);
+  constructor(private router: Router) { }
 
-  constructor(private router: Router) {}
+  ngOnInit(): void {
+    // Simulamos un "delay" de 3 segundos antes de mostrar el contenido
+    setTimeout(() => {
+      this.loading.set(false);
+    }, 2000);
+  }
 
   toggleMenu() {
     this.isMenuOpen = !this.isMenuOpen;
