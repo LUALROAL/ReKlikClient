@@ -18,13 +18,15 @@ export class DashboardComponent implements OnInit {
     private router: Router
   ) { }
 
-  ngOnInit() {
-    // Obtener los datos del usuario del servicio de autenticación
-    const userData = localStorage.getItem('user');
-    if (userData) {
-      this.user = JSON.parse(userData);
+ ngOnInit() {
+  const userData = localStorage.getItem('user');
+  if (userData) {
+    this.user = JSON.parse(userData);
+    if (this.user.userType === 'administrador' && !this.router.url.includes('admin-dashboard')) {
+      this.router.navigate(['/admin-dashboard']);
     }
   }
+}
 
     logout() {
     this.authService.logout();

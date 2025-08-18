@@ -178,7 +178,7 @@ export class LoginComponent {
           shape: "pill",
           text: "continue_with",
           logo_alignment: "left",
-          width: 380
+          width: '100%'
         }
       );
     } else {
@@ -197,22 +197,29 @@ onSubmit() {
     password: this.loginForm.value.password!
   };
 
-    this.authService.login(credentials).pipe(
+  this.authService.login(credentials).pipe(
     catchError(error => {
       this.errorMessage.set(error.message || 'Error al iniciar sesión');
       return of(null);
     }),
     finalize(() => this.loading.set(false))
-  ).subscribe(response => {
+ ).subscribe(response => {
     if (response) {
       console.log('✅ Login exitoso', response);
+      // Verificar nuevamente el tipo de usuario y redirigir
+      const targetRoute = response.user.userType === 'administrador'
+        ? '/admin-dashboard'
+        : '/dashboard';
+      this.router.navigateByUrl(targetRoute);
     }
   });
 }
 
   private handleGoogleLogin(idToken: string) {
   this.authService.googleLogin(idToken).subscribe({
-    next: () => this.router.navigate(['/dashboard']),
+    next: (response) => {
+      console.log('✅ Google login exitoso 🔥🔥🔥🔥🔥🔥🔥', response);
+    },
     error: () => this.errorMessage.set('Error al autenticar con Google')
   });
 }

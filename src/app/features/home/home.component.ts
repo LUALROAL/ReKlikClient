@@ -272,7 +272,7 @@ export class HomeComponent {
     // Simulamos un "delay" de 3 segundos antes de mostrar el contenido
     setTimeout(() => {
       this.loading.set(false);
-    }, 2000);
+    }, 1000);
   }
 
   toggleMenu() {

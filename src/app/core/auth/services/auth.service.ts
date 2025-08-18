@@ -10,6 +10,7 @@ interface LoginResponse {
   user: {
     id: string;
     email: string;
+    userType: string;
     // otras propiedades del usuario que devuelva tu backend
   };
 }
@@ -44,13 +45,24 @@ export class AuthService {
     );
   }
 
-  private handleAuthentication(response: LoginResponse): void {
-    localStorage.setItem('token', response.token);
-    localStorage.setItem('user', JSON.stringify(response.user));
-    this.currentUser.set(response.user);
-    this.isAuthenticated.set(true);
-    this.router.navigate(['/dashboard']);
-  }
+private handleAuthentication(response: LoginResponse): void {
+  localStorage.setItem('token', response.token);
+  localStorage.setItem('user', JSON.stringify(response.user));
+  this.currentUser.set(response.user);
+  this.isAuthenticated.set(true);
+
+  const targetRoute = response.user.userType === 'administrador'
+    ? '/admin-dashboard'
+    : '/dashboard';
+
+  // Delay mínimo para asegurar que Angular cargue Lazy Components
+  setTimeout(() => {
+    this.router.navigateByUrl(targetRoute).catch(err => {
+      console.error('Error en navegación:', err);
+      this.router.navigate(['/']); // fallback
+    });
+  }, 50); // 50ms suele ser suficiente
+}
 
   //  método para obtener el usuario actual
   getCurrentUser(): User | null {
