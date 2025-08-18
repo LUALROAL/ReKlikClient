@@ -1,5 +1,5 @@
 import { Injectable, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
 import { catchError, Observable, tap, throwError } from 'rxjs';
@@ -68,9 +68,33 @@ export class AuthService {
     }
   }
 
-  register(userData: any) {
-    return this.http.post(`${this.API_URL}/auth/register`, userData);
-  }
+register(userData: any): Observable<LoginResponse> {
+  return this.http.post<LoginResponse>(`${this.API_URL}/auth/register`, userData).pipe(
+    tap(response => {
+      // Éxito → guardamos sesión/token
+      this.handleAuthentication(response);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      // Error desde backend
+      const backendMessage = error.error?.message || 'Error en el registro';
+      // Reempaquetamos el error con el mensaje correcto
+      return throwError(() => new Error(backendMessage));
+    })
+  );
+}
+
+googleLogin(idToken: string): Observable<LoginResponse> {
+  return this.http.post<LoginResponse>(`${this.API_URL}/auth/google`, { idToken }).pipe(
+    tap(response => {
+      this.handleAuthentication(response);
+    }),
+    catchError((error: HttpErrorResponse) => {
+      const backendMessage = error.error?.message || 'Error en Google login';
+      return throwError(() => new Error(backendMessage));
+    })
+  );
+}
+
 
  // auth.service.ts
 logout() {
@@ -87,11 +111,11 @@ logout() {
     return this.isAuthenticated();
   }
 
-googleLogin(idToken: string): Observable<LoginResponse> {
-  return this.http.post<LoginResponse>(`${this.API_URL}/auth/google`, { idToken }).pipe(
-    tap(response => {
-      this.handleAuthentication(response);
-    })
-  );
-}
+// googleLogin(idToken: string): Observable<LoginResponse> {
+//   return this.http.post<LoginResponse>(`${this.API_URL}/auth/google`, { idToken }).pipe(
+//     tap(response => {
+//       this.handleAuthentication(response);
+//     })
+//   );
+// }
 }
