@@ -86,4 +86,12 @@ logout() {
     this.isAuthenticated.set(!!token);
     return this.isAuthenticated();
   }
+
+googleLogin(idToken: string): Observable<LoginResponse> {
+  return this.http.post<LoginResponse>(`${this.API_URL}/auth/google`, { idToken }).pipe(
+    tap(response => {
+      this.handleAuthentication(response);
+    })
+  );
+}
 }
