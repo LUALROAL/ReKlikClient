@@ -1,0 +1,9 @@
+main {
+  margin-left: 16rem; /* Ancho del sidebar */
+}
+
+@media (max-width: 768px) {
+  main {
+    margin-left: 0;
+  }
+}

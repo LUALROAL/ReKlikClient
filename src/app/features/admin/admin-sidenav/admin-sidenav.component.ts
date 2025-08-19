@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, EventEmitter, HostListener, Input, Output } from '@angular/core';
 
 @Component({
   selector: 'app-admin-sidenav',
@@ -8,5 +8,5 @@ import { Component } from '@angular/core';
   styleUrl: './admin-sidenav.component.scss'
 })
 export class AdminSidenavComponent {
-
+  @Input() isOpen = true;
 }

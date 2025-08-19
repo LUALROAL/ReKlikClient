@@ -1,0 +1,11 @@
+aside {
+  transition: transform 0.3s ease-in-out;
+}
+
+aside.-translate-x-full {
+  transform: translateX(-100%);
+}
+
+aside.translate-x-0 {
+  transform: translateX(0);
+}
