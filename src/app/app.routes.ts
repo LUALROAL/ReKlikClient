@@ -17,10 +17,15 @@ export const routes: Routes = [
     loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
     canActivate: [AuthGuard]
   },
-   {
-    path: 'admin-dashboard',
-    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
-    canActivate: [AuthGuard, AdminGuard] // Protegemos toda el área de admin
+  //  {
+  //   path: 'admin-dashboard',
+  //   loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES),
+    // canActivate: [AuthGuard, AdminGuard] // Protegemos toda el área de admin
+
+  // },
+    {
+    path: 'admin',
+    loadChildren: () => import('./features/admin/admin.routes').then(m => m.ADMIN_ROUTES)
   },
   // {
   //   path: 'admin-dashboard',

@@ -1,18 +1,23 @@
 import { Routes } from '@angular/router';
 import { AdminLayoutComponent } from '../../layouts/admin-layout/admin-layout.component';
+import { AdminGuard } from '../../core/auth/guards/adminGuard';
+import { AuthGuard } from '../../core/auth/guards/auth.guard';
 
 export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
+    canActivate: [AuthGuard, AdminGuard],
     children: [
       {
-        path: '',
-        loadComponent: () => import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent)
+        path: 'admin-dashboard',
+        loadComponent: () => import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+        canLoad: [AuthGuard, AdminGuard]
       },
       {
         path: 'perfil',
-        loadComponent: () => import('./admin-profile/admin-profile.component').then(m => m.AdminProfileComponent)
+        loadComponent: () => import('./admin-profile/admin-profile.component').then(m => m.AdminProfileComponent),
+        canLoad: [AuthGuard, AdminGuard]
       }
       // {
       //   path: 'usuarios',

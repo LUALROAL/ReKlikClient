@@ -59,7 +59,7 @@ private handleAuthentication(response: LoginResponse): void {
   this.isAuthenticated.set(true);
 
   const targetRoute = response.user.userType === 'administrador'
-    ? '/admin-dashboard'
+    ? '/admin/admin-dashboard'
     : '/dashboard';
 
   setTimeout(() => {

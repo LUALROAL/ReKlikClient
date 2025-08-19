@@ -22,8 +22,8 @@ export class DashboardComponent implements OnInit {
   const userData = localStorage.getItem('user');
   if (userData) {
     this.user = JSON.parse(userData);
-    if (this.user.userType === 'administrador' && !this.router.url.includes('admin-dashboard')) {
-      this.router.navigate(['/admin-dashboard']);
+    if (this.user.userType === 'administrador' && !this.router.url.includes('admin/admin-dashboard')) {
+      this.router.navigate(['/admin/admin-dashboard']);
     }
   }
 }

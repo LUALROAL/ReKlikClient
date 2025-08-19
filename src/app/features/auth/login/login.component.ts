@@ -163,7 +163,7 @@ async ngAfterViewInit() {
   await this.waitForGoogle();
 
   google.accounts.id.initialize({
-    client_id: 'TU_CLIENT_ID',
+    client_id: '1039061657987-tqdli0gkper6a2rtq7sd1i73pmelqn0c.apps.googleusercontent.com',
     callback: (response: any) => this.handleGoogleLogin(response.credential),
   });
 
@@ -202,7 +202,7 @@ onSubmit() {
       console.log('✅ Login exitoso', response);
       // Verificar nuevamente el tipo de usuario y redirigir
       const targetRoute = response.user.userType === 'administrador'
-        ? '/admin-dashboard'
+        ? '/admin/admin-dashboard'
         : '/dashboard';
       this.router.navigateByUrl(targetRoute);
     }

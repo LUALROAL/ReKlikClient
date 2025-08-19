@@ -38,10 +38,7 @@
             ],
             "scripts": [],
             "server": "src/main.server.ts",
-            "prerender": true,
-            "ssr": {
-              "entry": "server.ts"
-            }
+            "prerender": true
           },
           "configurations": {
             "production": {
@@ -69,7 +66,6 @@
         },
         "serve": {
           "options": {
-            "timeout": 60000
           },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
