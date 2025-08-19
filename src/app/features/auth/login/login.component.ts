@@ -144,47 +144,41 @@ export class LoginComponent {
   }
   ngOnInit() {
 
-//     google.accounts.id.initialize({
-//       client_id: '1039061657987-tqdli0gkper6a2rtq7sd1i73pmelqn0c.apps.googleusercontent.com',
-//       callback: (response: any) => this.handleGoogleLogin(response.credential),
-//     });
-
-//   google.accounts.id.renderButton(
-//   document.getElementById("googleBtn"),
-//   {
-//       theme: "outline",   // outline | filled_blue | filled_black
-//     size: "large",      // small | medium | large
-//     shape: "pill",      // rect | pill | circle | square
-//     text: "continue_with", // o "signin_with"
-//     logo_alignment: "left", // o "center"
-//     width: 380    // ancho en px
-//   }
-// );
-
   }
 
-  ngAfterViewInit() {
-    if (typeof google !== 'undefined') {
-      google.accounts.id.initialize({
-        client_id: '1039061657987-tqdli0gkper6a2rtq7sd1i73pmelqn0c.apps.googleusercontent.com',
-        callback: (response: any) => this.handleGoogleLogin(response.credential),
-      });
+private waitForGoogle(): Promise<void> {
+  return new Promise((resolve) => {
+    const check = () => {
+      if (typeof google !== 'undefined') {
+        resolve();
+      } else {
+        setTimeout(check, 100);
+      }
+    };
+    check();
+  });
+}
 
-      google.accounts.id.renderButton(
-        document.getElementById("googleBtn"),
-        {
-          theme: "outline",
-          size: "large",
-          shape: "pill",
-          text: "continue_with",
-          logo_alignment: "left",
-          width: '100%'
-        }
-      );
-    } else {
-      console.error("⚠️ Google script no cargado aún.");
+async ngAfterViewInit() {
+  await this.waitForGoogle();
+
+  google.accounts.id.initialize({
+    client_id: 'TU_CLIENT_ID',
+    callback: (response: any) => this.handleGoogleLogin(response.credential),
+  });
+
+  google.accounts.id.renderButton(
+    document.getElementById("googleBtn"),
+    {
+      theme: "outline",
+      size: "large",
+      shape: "pill",
+      text: "continue_with",
+      logo_alignment: "left",
+      width: '100%'
     }
-  }
+  );
+}
 
 onSubmit() {
   if (this.loginForm.invalid) return;

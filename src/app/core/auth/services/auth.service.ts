@@ -33,6 +33,10 @@ export class AuthService {
 
   constructor(private http: HttpClient, private router: Router) { }
 
+    private isBrowser(): boolean {
+    return typeof window !== 'undefined';
+  }
+
   login(credentials: { email: string; password: string }): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.API_URL}/auth/login`, credentials).pipe(
       tap(response => {
@@ -46,8 +50,11 @@ export class AuthService {
   }
 
 private handleAuthentication(response: LoginResponse): void {
-  localStorage.setItem('token', response.token);
-  localStorage.setItem('user', JSON.stringify(response.user));
+  if (this.isBrowser()) {
+    localStorage.setItem('token', response.token);
+    localStorage.setItem('user', JSON.stringify(response.user));
+  }
+
   this.currentUser.set(response.user);
   this.isAuthenticated.set(true);
 
@@ -55,20 +62,23 @@ private handleAuthentication(response: LoginResponse): void {
     ? '/admin-dashboard'
     : '/dashboard';
 
-  // Delay mínimo para asegurar que Angular cargue Lazy Components
   setTimeout(() => {
     this.router.navigateByUrl(targetRoute).catch(err => {
       console.error('Error en navegación:', err);
-      this.router.navigate(['/']); // fallback
+      this.router.navigate(['/']);
     });
-  }, 50); // 50ms suele ser suficiente
+  }, 50);
 }
 
+
   //  método para obtener el usuario actual
-  getCurrentUser(): User | null {
-    const userData = localStorage.getItem('user');
-    return userData ? JSON.parse(userData) : null;
-  }
+ getCurrentUser(): User | null {
+  if (!this.isBrowser()) return null;
+
+  const userData = localStorage.getItem('user');
+  return userData ? JSON.parse(userData) : null;
+}
+
 
   private handleLoginError(error: any): void {
     console.error('Login error:', error);
@@ -110,18 +120,25 @@ googleLogin(idToken: string): Observable<LoginResponse> {
 
  // auth.service.ts
 logout() {
-  localStorage.removeItem('token');
-  localStorage.removeItem('user');
+  if (this.isBrowser()) {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+  }
+
   this.isAuthenticated.set(false);
   this.currentUser.set(null);
   this.router.navigate(['/auth/login']);
 }
 
-  checkAuthentication() {
-    const token = localStorage.getItem('token');
-    this.isAuthenticated.set(!!token);
-    return this.isAuthenticated();
-  }
+
+checkAuthentication() {
+  if (!this.isBrowser()) return false;
+
+  const token = localStorage.getItem('token');
+  this.isAuthenticated.set(!!token);
+  return this.isAuthenticated();
+}
+
 
 // googleLogin(idToken: string): Observable<LoginResponse> {
 //   return this.http.post<LoginResponse>(`${this.API_URL}/auth/google`, { idToken }).pipe(

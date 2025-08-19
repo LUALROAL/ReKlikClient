@@ -68,6 +68,9 @@
           "defaultConfiguration": "production"
         },
         "serve": {
+          "options": {
+            "timeout": 60000
+          },
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {

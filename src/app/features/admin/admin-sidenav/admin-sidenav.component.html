@@ -1,7 +1,5 @@
-<aside
-  class="fixed inset-y-0 left-0 z-40 w-64 bg-secondary transform transition-transform duration-200 ease-in-out"
-  [class.-translate-x-full]="!isOpen"
-  [class.translate-x-0]="isOpen">
+<aside class="fixed inset-y-0 left-0 z-40 w-64 bg-secondary transform transition-transform duration-200 ease-in-out"
+  [class.-translate-x-full]="!isOpen" [class.translate-x-0]="isOpen">
   <div class="flex flex-col h-full">
     <!-- Logo -->
     <div class="flex items-center justify-center py-6 px-4  border-secondary-light">
@@ -15,7 +13,19 @@
     <nav class="flex-1 overflow-y-auto py-4 px-2">
       <ul class="space-y-1">
 
-           <!-- Productos -->
+        <!-- Dashboard -->
+        <li>
+          <a routerLinkActive="bg-primary-light"
+            class="flex items-center p-3 rounded-lg text-warm-white hover:bg-secondary-light transition-colors cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+            </svg>
+            <span class="ml-3">Tablero</span>
+          </a>
+        </li>
+        <!-- Productos -->
         <li>
           <a routerLink="/admin/productos" routerLinkActive="bg-primary-light"
             class="flex items-center p-3 rounded-lg text-warm-white hover:bg-secondary-light transition-colors cursor-pointer">
@@ -73,9 +83,9 @@
     <div class="p-4 border-t border-secondary-light">
       <div class="flex items-center gap-3">
         <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-          <span class="text-warm-white font-bold">A</span>
+          <span class="text-warm-white font-bold">{{ currentUser?.name?.charAt(0) || '😊' }}</span>
         </div>
-        <span class="text-warm-white text-sm font-medium">Administrador</span>
+        <span class="text-warm-white text-sm font-medium">{{ currentUser?.name || 'Administrador' }}</span>
       </div>
     </div>
   </div>
