@@ -6,6 +6,7 @@ import { AuthService } from '../../../core/auth/services/auth.service';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import {  ToastrService } from 'ngx-toastr';
 import { CommonModule } from '@angular/common';
+import { LoadingComponent } from '../../../shared/loading/loading.component';
 
 
 @Component({
@@ -13,7 +14,8 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    CommonModule
+    CommonModule,
+    LoadingComponent
   ],
   templateUrl: './admin-profile.component.html',
   styleUrl: './admin-profile.component.scss'

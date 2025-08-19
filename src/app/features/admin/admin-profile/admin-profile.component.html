@@ -1,82 +1,156 @@
-<div class="container mx-auto px-4 py-8">
-  <div class="bg-white rounded-lg shadow-md p-6 max-w-3xl mx-auto">
-    <h1 class="text-2xl font-bold text-gray-800 mb-6">Editar Perfil</h1>
+<app-loading *ngIf="loading || passwordLoading"></app-loading>
 
-    <!-- Información del perfil -->
-    <div class="mb-8">
-      <h2 class="text-xl font-semibold text-gray-700 mb-4">Información Personal</h2>
-
-      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-          <div>
-            <label for="name" class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
-            <input id="name" type="text" formControlName="name"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-          </div>
-
-          <div>
-            <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-            <input id="email" type="email" formControlName="email"
-                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-          </div>
-        </div>
-
-        <div class="mb-4">
-          <label for="phone" class="block text-sm font-medium text-gray-700 mb-1">Teléfono</label>
-          <input id="phone" type="tel" formControlName="phone"
-                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-
-        <div class="flex justify-end">
-          <button type="submit" [disabled]="loading"
-                  class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50">
-            <span *ngIf="!loading">Guardar Cambios</span>
-            <span *ngIf="loading">Guardando...</span>
-          </button>
-        </div>
-      </form>
+<section class="min-h-screen bg-warm-white flex items-center justify-center p-4 py-8">
+  <div class="w-full max-w-3xl bg-pure-white rounded-xl shadow-lg overflow-hidden">
+    <!-- Encabezado con logo -->
+    <div class="bg-secondary p-4 text-center">
+      <div class="flex items-center justify-center gap-3">
+        <img src="assets/images/LOGO.png" alt="ReKlik Logo" class="w-10 h-10">
+        <h1 class="text-xl font-bold italic text-warm-white">
+          <span class="text-primary">Re</span><span class="text-accent">Klik</span>
+        </h1>
+      </div>
     </div>
 
-    <!-- Cambio de contraseña -->
-    <div>
-      <div class="flex justify-between items-center mb-4">
-        <h2 class="text-xl font-semibold text-gray-700">Cambiar Contraseña</h2>
-        <button (click)="togglePasswordForm()" class="text-primary hover:text-primary-dark">
-          {{ showPasswordForm ? 'Cancelar' : 'Cambiar Contraseña' }}
-        </button>
+    <!-- Contenido principal -->
+    <div class="p-6 md:p-8">
+      <h2 class="text-2xl font-bold text-secondary mb-6">Editar Perfil</h2>
+
+      <!-- Información del perfil -->
+      <div class="mb-8">
+        <h3 class="text-xl font-semibold text-secondary mb-4 border-b border-gray-200 pb-2">Información Personal</h3>
+
+        <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-secondary mb-1">Nombre</label>
+              <input id="name" type="text" formControlName="name" class="input-field"
+                [class.input-error]="profileForm.get('name')?.invalid && profileForm.get('name')?.touched">
+              @if (profileForm.get('name')?.invalid && profileForm.get('name')?.touched) {
+              <p class="mt-1 text-sm text-red-600">El nombre es requerido</p>
+              }
+            </div>
+
+            <div>
+              <label for="email" class="block text-sm font-medium text-secondary mb-1">Email</label>
+              <input id="email" type="email" formControlName="email" class="input-field"
+                [class.input-error]="profileForm.get('email')?.invalid && profileForm.get('email')?.touched">
+              @if (profileForm.get('email')?.invalid && profileForm.get('email')?.touched) {
+              <p class="mt-1 text-sm text-red-600">Por favor ingresa un email válido</p>
+              }
+            </div>
+          </div>
+
+          <div>
+            <label for="phone" class="block text-sm font-medium text-secondary mb-1">Teléfono</label>
+            <input id="phone" type="tel" formControlName="phone" class="input-field"
+              [class.input-error]="profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched">
+            @if (profileForm.get('phone')?.invalid && profileForm.get('phone')?.touched) {
+            <p class="mt-1 text-sm text-red-600">Por favor ingresa un teléfono válido</p>
+            }
+          </div>
+
+          <div class="pt-4 flex justify-end">
+            <button type="submit" [disabled]="loading"
+              class="flex items-center gap-2 px-4 py-2 text-warm-white rounded-lg bg-primary hover:bg-primary-dark transition-colors disabled:opacity-50">
+              @if (loading) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+                <path fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  class="opacity-75"></path>
+              </svg>
+              <span>Guardando...</span>
+              } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Guardar Cambios</span>
+              }
+            </button>
+          </div>
+        </form>
       </div>
 
-      <form *ngIf="showPasswordForm" [formGroup]="passwordForm" (ngSubmit)="updatePassword()" class="space-y-4">
-        <div>
-          <label for="currentPassword" class="block text-sm font-medium text-gray-700 mb-1">Contraseña Actual</label>
-          <input id="currentPassword" type="password" formControlName="currentPassword"
-                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-        </div>
-
-        <div>
-          <label for="newPassword" class="block text-sm font-medium text-gray-700 mb-1">Nueva Contraseña</label>
-          <input id="newPassword" type="password" formControlName="newPassword"
-                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-          <p class="text-xs text-gray-500 mt-1">Mínimo 6 caracteres</p>
-        </div>
-
-        <div>
-          <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirmar Nueva Contraseña</label>
-          <input id="confirmPassword" type="password" formControlName="confirmPassword"
-                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary">
-          <p *ngIf="passwordForm.hasError('notSame')" class="text-xs text-red-500 mt-1">
-            Las contraseñas no coinciden
-          </p>
-        </div>
-
-        <div class="flex justify-end">
-          <button type="submit" [disabled]="passwordLoading || passwordForm.invalid"
-                  class="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary-dark transition-colors disabled:opacity-50">
-            <span *ngIf="!passwordLoading">Actualizar Contraseña</span>
-            <span *ngIf="passwordLoading">Actualizando...</span>
+      <!-- Cambio de contraseña -->
+      <div>
+        <div class="flex justify-between items-center mb-4 border-b border-gray-200 pb-2">
+          <h3 class="text-xl font-semibold text-secondary">Cambiar Contraseña</h3>
+          <button (click)="togglePasswordForm()"
+            class="text-sm font-medium text-primary hover:text-primary-dark flex items-center gap-1">
+            @if (showPasswordForm) {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd"
+                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
+                clip-rule="evenodd" />
+            </svg>
+            <span>Cancelar</span>
+            } @else {
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path
+                d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+            <span>Cambiar Contraseña</span>
+            }
           </button>
         </div>
-      </form>
+
+        @if (showPasswordForm) {
+        <form [formGroup]="passwordForm" (ngSubmit)="updatePassword()" class="space-y-4 bg-gray-50 p-4 rounded-lg">
+          <div>
+            <label for="currentPassword" class="block text-sm font-medium text-secondary mb-1">Contraseña Actual</label>
+            <input id="currentPassword" type="password" formControlName="currentPassword" class="input-field"
+              [class.input-error]="passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched">
+            @if (passwordForm.get('currentPassword')?.invalid && passwordForm.get('currentPassword')?.touched) {
+            <p class="mt-1 text-sm text-red-600">La contraseña actual es requerida</p>
+            }
+          </div>
+
+          <div>
+            <label for="newPassword" class="block text-sm font-medium text-secondary mb-1">Nueva Contraseña</label>
+            <input id="newPassword" type="password" formControlName="newPassword" class="input-field"
+              [class.input-error]="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+            @if (passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched) {
+            <p class="mt-1 text-sm text-red-600">La contraseña debe tener al menos 6 caracteres</p>
+            }
+          </div>
+
+          <div>
+            <label for="confirmPassword" class="block text-sm font-medium text-secondary mb-1">Confirmar Nueva
+              Contraseña</label>
+            <input id="confirmPassword" type="password" formControlName="confirmPassword" class="input-field"
+              [class.input-error]="passwordForm.hasError('notSame') && passwordForm.get('confirmPassword')?.touched">
+            @if (passwordForm.hasError('notSame') && passwordForm.get('confirmPassword')?.touched) {
+            <p class="mt-1 text-sm text-red-600">Las contraseñas no coinciden</p>
+            }
+          </div>
+
+          <div class="pt-2 flex justify-end">
+            <button type="submit" [disabled]="passwordLoading || passwordForm.invalid"
+              class="flex items-center gap-1 md:gap-2 px-4 py-2 rounded-lg bg-primary text-warm-white hover:bg-primary-dark transition-colors disabled:opacity-50 cursor-pointer">
+              @if (passwordLoading) {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" class="opacity-25"></circle>
+                <path fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  class="opacity-75"></path>
+              </svg>
+              <span>Actualizando...</span>
+              } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd"
+                  d="M5 2a1 1 0 011 1v1h1a1 1 0 010 2H6v1a1 1 0 01-2 0V6H3a1 1 0 010-2h1V3a1 1 0 011-1zm0 10a1 1 0 011 1v1h1a1 1 0 110 2H6v1a1 1 0 11-2 0v-1H3a1 1 0 110-2h1v-1a1 1 0 011-1zM12 2a1 1 0 01.967.744L14.146 7.2 17.5 9.134a1 1 0 010 1.732l-3.354 1.935-1.18 4.455a1 1 0 01-1.933 0L9.854 12.2 6.5 10.266a1 1 0 010-1.732l3.354-1.935 1.18-4.455A1 1 0 0112 2z"
+                  clip-rule="evenodd" />
+              </svg>
+              <span>Actualizar Contraseña</span>
+              }
+            </button>
+          </div>
+        </form>
+        }
+      </div>
     </div>
   </div>
-</div>
+</section>
