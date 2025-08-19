@@ -23,8 +23,8 @@
         </button>
 
         <div class="flex items-center gap-4 ml-auto">
-          <a [routerLink]="['/admin/perfil']" routerLinkActive="bg-primary-light"
-            class="flex items-center px-4 py-3 text-gray-700 hover:bg-gray-100 rounded-md transition-colors">
+          <a [routerLink]="['/admin/perfil']" routerLinkActive="bg-secondary-dark text-warm-white"
+            class="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 rounded-lg bg-secondary-light hover:bg-secondary-dark transition-colors">
             <div class="hidden md:flex items-center gap-2">
               <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
                 <span class="text-warm-white font-bold">{{ currentUser?.name?.charAt(0) || '😊' }}</span>
@@ -32,6 +32,7 @@
               <span class="font-medium">{{ currentUser?.name || 'Administrador' }}</span>
             </div>
           </a>
+
           <!-- Botón de logout (icono en móvil, texto + icono en desktop) -->
           <button (click)="logout()"
             class="flex items-center gap-1 md:gap-2 px-2 md:px-4 py-1 md:py-2 rounded-lg bg-primary hover:bg-primary-dark transition-colors">
