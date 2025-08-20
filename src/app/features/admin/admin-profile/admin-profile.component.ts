@@ -8,6 +8,7 @@ import { AdminProfile } from '../../../core/models/users-models/admin-profile.mo
 import { UserService } from '../../../core/services/users-services/user.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { LoadingComponent } from '../../../shared/loading/loading.component';
+import { UserUpdateData } from '../../../core/models/users-models/User-admin-update.model';
 
 @Component({
   selector: 'app-admin-profile',
@@ -81,25 +82,36 @@ export class AdminProfileComponent implements OnInit {
     });
   }
 
-  updateProfile(): void {
-    if (this.profileForm.invalid) {
-      this.toastr.warning('Por favor complete todos los campos requeridos', 'Advertencia');
-      return;
-    }
-
-    this.loading = true;
-    this.userService.updateCurrentUser(this.profileForm.value).subscribe({
-      next: (updatedUser) => {
-        this.user = updatedUser;
-        this.toastr.success('Perfil actualizado correctamente', 'Éxito');
-        this.loading = false;
-      },
-      error: (err) => {
-        this.toastr.error('Error al actualizar el perfil', 'Error');
-        this.loading = false;
-      }
-    });
+ updateProfile(): void {
+  if (this.profileForm.invalid) {
+    this.toastr.warning('Por favor complete todos los campos requeridos', 'Advertencia');
+    return;
   }
+
+  this.loading = true;
+
+  // Creamos el objeto UserUpdateData combinando los valores del formulario con userType del usuario logueado
+  const userData: UserUpdateData = {
+    id: this.user.id,
+    name: this.profileForm.value.name,
+    email: this.profileForm.value.email,
+    phone: this.profileForm.value.phone,
+    userType: this.user.userType, // <-- importante, lo tomamos del usuario actual
+    createdAt: this.user.createdAt
+  };
+
+  this.userService.updateCurrentUser(userData).subscribe({
+    next: (updatedUser) => {
+      this.user = updatedUser;
+      this.toastr.success('Perfil actualizado correctamente', 'Éxito');
+      this.loading = false;
+    },
+    error: (error) => {
+      this.toastr.error('Error al actualizar el perfil', 'Error', error);
+      this.loading = false;
+    }
+  });
+}
 
   updatePassword(): void {
     if (this.passwordForm.invalid) {

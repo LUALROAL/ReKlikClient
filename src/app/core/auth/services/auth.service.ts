@@ -139,6 +139,10 @@ checkAuthentication() {
   return this.isAuthenticated();
 }
 
+getToken(): string | null {
+  if (!this.isBrowser()) return null;
+  return localStorage.getItem('token');
+}
 
 // googleLogin(idToken: string): Observable<LoginResponse> {
 //   return this.http.post<LoginResponse>(`${this.API_URL}/auth/google`, { idToken }).pipe(
