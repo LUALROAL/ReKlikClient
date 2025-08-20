@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
+// admin-profile.component.ts
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { ToastrService } from 'ngx-toastr';
+
 import { AdminProfile } from '../../../core/models/users-models/admin-profile.model';
 import { UserService } from '../../../core/services/users-services/user.service';
 import { AuthService } from '../../../core/auth/services/auth.service';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {  ToastrService } from 'ngx-toastr';
-import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '../../../shared/loading/loading.component';
-
 
 @Component({
   selector: 'app-admin-profile',
@@ -20,7 +20,7 @@ import { LoadingComponent } from '../../../shared/loading/loading.component';
   templateUrl: './admin-profile.component.html',
   styleUrl: './admin-profile.component.scss'
 })
-export class AdminProfileComponent {
+export class AdminProfileComponent implements OnInit {
   profileForm!: FormGroup;
   passwordForm!: FormGroup;
   user!: AdminProfile;
@@ -61,44 +61,45 @@ export class AdminProfileComponent {
     return pass === confirmPass ? null : { notSame: true };
   }
 
-loadUserData(): void {
+  loadUserData(): void {
     this.loading = true;
     this.userService.getCurrentUser().subscribe({
-        next: (user) => {
-            this.user = user;
-            this.profileForm.patchValue({
-                name: user.name,
-                email: user.email,
-                phone: user.phone
-            });
-            this.loading = false;
-        },
-        error: (err) => {
-            this.toastr.error('No se pudo cargar la información del usuario', 'Error');
-            this.loading = false;
-        }
+      next: (user) => {
+        this.user = user;
+        this.profileForm.patchValue({
+          name: user.name || '',
+          email: user.email || '',
+          phone: user.phone || ''
+        });
+        this.loading = false;
+      },
+      error: (err) => {
+        console.error('Error loading user data:', err);
+        this.toastr.error('No se pudo cargar la información del usuario', 'Error');
+        this.loading = false;
+      }
     });
   }
 
-updateProfile(): void {
+  updateProfile(): void {
     if (this.profileForm.invalid) {
-        this.toastr.warning('Por favor complete todos los campos requeridos', 'Advertencia');
-        return;
+      this.toastr.warning('Por favor complete todos los campos requeridos', 'Advertencia');
+      return;
     }
 
     this.loading = true;
     this.userService.updateCurrentUser(this.profileForm.value).subscribe({
-        next: (updatedUser) => {
-            this.user = updatedUser;
-            this.toastr.success('Perfil actualizado correctamente', 'Éxito');
-            this.loading = false;
-        },
-        error: (err) => {
-            this.toastr.error('Error al actualizar el perfil', 'Error');
-            this.loading = false;
-        }
+      next: (updatedUser) => {
+        this.user = updatedUser;
+        this.toastr.success('Perfil actualizado correctamente', 'Éxito');
+        this.loading = false;
+      },
+      error: (err) => {
+        this.toastr.error('Error al actualizar el perfil', 'Error');
+        this.loading = false;
+      }
     });
-}
+  }
 
   updatePassword(): void {
     if (this.passwordForm.invalid) {
