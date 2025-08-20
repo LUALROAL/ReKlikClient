@@ -4,6 +4,7 @@ import { isPlatformBrowser } from '@angular/common';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { DomSanitizer, SafeHtml } from '@angular/platform-browser';
+import { Subscription } from 'rxjs';
 
 // Interfaz para los elementos del menú
 export interface MenuItem {
@@ -23,7 +24,7 @@ export interface MenuItem {
 export class AdminSidenavComponent implements OnInit {
   @Input() isOpen = true;
   currentUser: any = null;
-
+  private userUpdateSubscription!: Subscription;
   // Definición de los elementos del menú usando la interfaz - CORREGIDO
   menuItems: MenuItem[] = [];
 
@@ -37,7 +38,12 @@ export class AdminSidenavComponent implements OnInit {
     if (isPlatformBrowser(this.platformId)) {
       this.currentUser = this.authService.getCurrentUser();
     }
-
+   this.userUpdateSubscription = this.authService.userUpdated$.subscribe(updatedUser => {
+      if (updatedUser) {
+        this.currentUser = updatedUser;
+        console.log('Usuario actualizado:', updatedUser);
+      }
+    });
     // Inicializar los items del menú con SafeHtml
     this.menuItems = [
       {
@@ -71,6 +77,13 @@ export class AdminSidenavComponent implements OnInit {
         icon: this.sanitizer.bypassSecurityTrustHtml('<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />')
       }
     ];
+  }
+
+  ngOnDestroy() {
+    // Limpiar la suscripción al destruir el componente
+    if (this.userUpdateSubscription) {
+      this.userUpdateSubscription.unsubscribe();
+    }
   }
 
   // Método para manejar clics en elementos del menú (opcional)

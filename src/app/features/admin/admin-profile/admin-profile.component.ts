@@ -120,17 +120,31 @@ updateProfile(): void {
     this.userService.updateCurrentUser(userData).subscribe({
       next: (response: any) => {
         // Verifica si la respuesta tiene la estructura esperada
+        let updatedUser: AdminProfile;
+
         if (response && response.status && response.message) {
           // Usa el mensaje del backend
           this.messageService.showSuccess(response.status, response.message);
+          updatedUser = response.user;
         } else if (response && response.user) {
           // Respuesta alternativa (solo el objeto user)
-          this.user = response.user;
+          updatedUser = response.user;
           this.messageService.showSuccess('Éxito', 'Perfil actualizado correctamente');
         } else {
-          // Respuesta inesperada
+          // Respuesta inesperada - usar datos del formulario
+          updatedUser = {
+            ...this.user,
+            name: userData.name,
+            email: userData.email,
+            phone: userData.phone
+          };
           this.messageService.showSuccess('Éxito', 'Perfil actualizado correctamente');
         }
+
+        // Actualizar el usuario en el servicio de autenticación
+        this.authService.notifyUserUpdated(updatedUser);
+
+        this.user = updatedUser;
         this.loading = false;
       },
       error: (error) => {

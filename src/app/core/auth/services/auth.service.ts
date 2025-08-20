@@ -2,7 +2,7 @@ import { Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 
-import { catchError, Observable, tap, throwError } from 'rxjs';
+import { BehaviorSubject, catchError, Observable, tap, throwError } from 'rxjs';
 import { environment } from '../../../../environments/environment';
 
 interface LoginResponse {
@@ -20,7 +20,7 @@ interface User {
   email: string;
   userType: string;
   phone: string;
-  createdAt: string;
+  createdAt?: string;
 }
 
 @Injectable({
@@ -30,6 +30,10 @@ export class AuthService {
   private readonly API_URL = environment.apiUrl;
   isAuthenticated = signal(false);
   currentUser = signal<any>(null);
+
+  //  BehaviorSubject para emitir cambios de usuario
+  private userUpdatedSource = new BehaviorSubject<User | null>(null);
+  userUpdated$ = this.userUpdatedSource.asObservable();
 
   constructor(private http: HttpClient, private router: Router) { }
 
@@ -71,13 +75,22 @@ private handleAuthentication(response: LoginResponse): void {
 }
 
 
-  //  método para obtener el usuario actual
- getCurrentUser(): User | null {
-  if (!this.isBrowser()) return null;
 
-  const userData = localStorage.getItem('user');
-  return userData ? JSON.parse(userData) : null;
-}
+ // Método para notificar que el usuario fue actualizado
+  notifyUserUpdated(updatedUser: User): void {
+    if (this.isBrowser()) {
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+    }
+    this.currentUser.set(updatedUser);
+    this.userUpdatedSource.next(updatedUser);
+  }
+
+  // Método para obtener el usuario actual (actualizado)
+  getCurrentUser(): User | null {
+    if (!this.isBrowser()) return null;
+    const userData = localStorage.getItem('user');
+    return userData ? JSON.parse(userData) : null;
+  }
 
 
   private handleLoginError(error: any): void {
@@ -151,4 +164,5 @@ getToken(): string | null {
 //     })
 //   );
 // }
+
 }
