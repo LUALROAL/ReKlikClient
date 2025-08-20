@@ -1,0 +1,67 @@
+ <div class="fixed inset-0 bg-secondary-transparent bg-opacity-70 flex items-center justify-center p-4 z-50 transition-opacity duration-300"
+         [class]="visible ? 'opacity-100' : 'opacity-0 pointer-events-none'">
+
+      <div class="bg-pure-white rounded-xl shadow-soft max-w-md w-full mx-4 transform transition-all duration-300"
+           [class]="visible ? 'scale-100 opacity-100' : 'scale-95 opacity-0'">
+
+        <!-- Header con color según tipo -->
+        <div class="p-5 rounded-t-xl border-b" [ngClass]="{
+          'bg-primary border-primary-dark': type === 'success',
+          'bg-accent border-accent-dark': type === 'error',
+          'bg-secondary border-secondary-dark': type === 'info',
+          'bg-yellow-400 border-yellow-500': type === 'warning'
+        }">
+          <h3 class="text-xl font-bold text-pure-white text-center">
+            {{ title }}
+          </h3>
+        </div>
+
+        <!-- Body -->
+        <div class="p-6">
+          <div class="flex items-center justify-center mb-5">
+            <div [ngSwitch]="type">
+              <!-- Éxito (check verde) -->
+              <div *ngSwitchCase="'success'" class="w-16 h-16 rounded-full bg-primary-light flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pure-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
+
+              <!-- Error (X roja) -->
+              <div *ngSwitchCase="'error'" class="w-16 h-16 rounded-full bg-accent flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pure-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </div>
+
+              <!-- Info (i azul) -->
+              <div *ngSwitchDefault class="w-16 h-16 rounded-full bg-secondary flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-pure-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <p class="text-center text-secondary text-lg font-medium mb-1">{{ message }}</p>
+
+          <!-- Mensaje adicional para éxito -->
+          <p *ngIf="type === 'success'" class="text-center text-gray-600 text-sm">
+            Los cambios se han aplicado correctamente
+          </p>
+        </div>
+
+        <!-- Footer -->
+        <div class="p-5 border-t border-gray-200 flex justify-center">
+          <button (click)="onClose()" class="px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-md hover:shadow-lg"
+            [ngClass]="{
+              'bg-primary hover:bg-primary-dark text-pure-white': type === 'success',
+              'bg-accent hover:bg-accent-dark text-pure-white': type === 'error',
+              'bg-secondary hover:bg-secondary-dark text-pure-white': type === 'info',
+              'bg-yellow-400 hover:bg-yellow-500 text-secondary': type === 'warning'
+            }">
+            Entendido
+          </button>
+        </div>
+      </div>
+    </div>

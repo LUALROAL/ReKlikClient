@@ -9,6 +9,8 @@ import { UserService } from '../../../core/services/users-services/user.service'
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { LoadingComponent } from '../../../shared/loading/loading.component';
 import { UserUpdateData } from '../../../core/models/users-models/User-admin-update.model';
+import { MessageModalComponent } from '../../../shared/components/message-modal/message-modal.component';
+import { MessageModalService } from '../../../core/services/message-modal.service';
 
 @Component({
   selector: 'app-admin-profile',
@@ -16,7 +18,8 @@ import { UserUpdateData } from '../../../core/models/users-models/User-admin-upd
   imports: [
     ReactiveFormsModule,
     CommonModule,
-    LoadingComponent
+    LoadingComponent,
+    MessageModalComponent
   ],
   templateUrl: './admin-profile.component.html',
   styleUrl: './admin-profile.component.scss'
@@ -29,17 +32,32 @@ export class AdminProfileComponent implements OnInit {
   passwordLoading = false;
   showPasswordForm = false;
 
+   // Propiedades para el modal
+  modalVisible = false;
+  modalTitle = '';
+  modalMessage = '';
+  modalType: 'success' | 'error' | 'info' | 'warning' = 'info';
+
   constructor(
     private fb: FormBuilder,
     private userService: UserService,
     private authService: AuthService,
-    private toastr: ToastrService
+    private toastr: ToastrService,
+      private messageService: MessageModalService
   ) {
     this.createForms();
   }
 
   ngOnInit(): void {
     this.loadUserData();
+
+    this.messageService.getMessage().subscribe(message => {
+      if (message) {
+        this.showModal(message.title, message.content, message.type);
+      } else {
+        this.hideModal();
+      }
+    });
   }
 
   createForms(): void {
@@ -82,40 +100,56 @@ export class AdminProfileComponent implements OnInit {
     });
   }
 
- updateProfile(): void {
-  if (this.profileForm.invalid) {
-    this.toastr.warning('Por favor complete todos los campos requeridos', 'Advertencia');
-    return;
+updateProfile(): void {
+    if (this.profileForm.invalid) {
+      this.messageService.showWarning('Advertencia', 'Por favor complete todos los campos requeridos');
+      return;
+    }
+
+    this.loading = true;
+
+    const userData: UserUpdateData = {
+      id: this.user.id,
+      name: this.profileForm.value.name,
+      email: this.profileForm.value.email,
+      phone: this.profileForm.value.phone,
+      userType: this.user.userType,
+      createdAt: this.user.createdAt
+    };
+
+    this.userService.updateCurrentUser(userData).subscribe({
+      next: (response: any) => {
+        // Verifica si la respuesta tiene la estructura esperada
+        if (response && response.status && response.message) {
+          // Usa el mensaje del backend
+          this.messageService.showSuccess(response.status, response.message);
+        } else if (response && response.user) {
+          // Respuesta alternativa (solo el objeto user)
+          this.user = response.user;
+          this.messageService.showSuccess('Éxito', 'Perfil actualizado correctamente');
+        } else {
+          // Respuesta inesperada
+          this.messageService.showSuccess('Éxito', 'Perfil actualizado correctamente');
+        }
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error updating profile:', error);
+
+        // Manejo de errores con mensajes del backend
+        if (error.error && error.error.message) {
+          this.messageService.showError('Error', error.error.message);
+        } else {
+          this.messageService.showError('Error', 'Error al actualizar el perfil');
+        }
+        this.loading = false;
+      }
+    });
   }
 
-  this.loading = true;
-
-  // Creamos el objeto UserUpdateData combinando los valores del formulario con userType del usuario logueado
-  const userData: UserUpdateData = {
-    id: this.user.id,
-    name: this.profileForm.value.name,
-    email: this.profileForm.value.email,
-    phone: this.profileForm.value.phone,
-    userType: this.user.userType, // <-- importante, lo tomamos del usuario actual
-    createdAt: this.user.createdAt
-  };
-
-  this.userService.updateCurrentUser(userData).subscribe({
-    next: (updatedUser) => {
-      this.user = updatedUser;
-      this.toastr.success('Perfil actualizado correctamente', 'Éxito');
-      this.loading = false;
-    },
-    error: (error) => {
-      this.toastr.error('Error al actualizar el perfil', 'Error', error);
-      this.loading = false;
-    }
-  });
-}
-
-  updatePassword(): void {
+updatePassword(): void {
     if (this.passwordForm.invalid) {
-      this.toastr.warning('Por favor complete todos los campos requeridos', 'Advertencia');
+      this.messageService.showWarning('Advertencia', 'Por favor complete todos los campos requeridos');
       return;
     }
 
@@ -123,14 +157,24 @@ export class AdminProfileComponent implements OnInit {
     const { currentPassword, newPassword } = this.passwordForm.value;
 
     this.userService.updatePassword(this.user.id, { currentPassword, newPassword }).subscribe({
-      next: () => {
-        this.toastr.success('Contraseña actualizada correctamente', 'Éxito');
+      next: (response: any) => {
+        // Maneja diferentes formatos de respuesta
+        if (response && response.message) {
+          this.messageService.showSuccess('Éxito', response.message);
+        } else if (response && response.status) {
+          this.messageService.showSuccess(response.status, 'Contraseña actualizada correctamente');
+        } else {
+          this.messageService.showSuccess('Éxito', 'Contraseña actualizada correctamente');
+        }
+
         this.passwordForm.reset();
         this.showPasswordForm = false;
         this.passwordLoading = false;
       },
       error: (err) => {
-        this.toastr.error(err.error?.message || 'Error al actualizar la contraseña', 'Error');
+        // Maneja errores con mensajes del backend
+        const errorMessage = err.error?.message || 'Error al actualizar la contraseña';
+        this.messageService.showError('Error', errorMessage);
         this.passwordLoading = false;
       }
     });
@@ -142,4 +186,17 @@ export class AdminProfileComponent implements OnInit {
       this.passwordForm.reset();
     }
   }
+
+  showModal(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
+    this.modalTitle = title;
+    this.modalMessage = message;
+    this.modalType = type;
+    this.modalVisible = true;
+  }
+
+  // Método para ocultar el modal
+  hideModal(): void {
+    this.modalVisible = false;
+  }
+
 }

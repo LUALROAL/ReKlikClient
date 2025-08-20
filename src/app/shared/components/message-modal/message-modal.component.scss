@@ -1,0 +1,30 @@
+/* Animaciones para el modal */
+.modal-backdrop {
+  transition: opacity 0.3s ease;
+}
+
+.modal-container {
+  transition: all 0.3s ease;
+}
+
+/* Mejoras visuales para el modal */
+.message-modal-icon {
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+}
+
+/* Efecto de pulso para el botón de éxito */
+.btn-success-pulse {
+  animation: pulse-green 2s infinite;
+}
+
+@keyframes pulse-green {
+  0% {
+    box-shadow: 0 0 0 0 rgba(0, 152, 65, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(0, 152, 65, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(0, 152, 65, 0);
+  }
+}

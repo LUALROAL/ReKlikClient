@@ -15,7 +15,8 @@ module.exports = {
         secondary: {
           DEFAULT: 'var(--color-secondary)',
           light: 'var(--color-secondary-light)',
-          dark: 'var(--color-secondary-dark)'
+          dark: 'var(--color-secondary-dark)',
+          transparent: 'var(--color-secondary-transparent)'
         },
         accent: {
           DEFAULT: 'var(--color-accent)',

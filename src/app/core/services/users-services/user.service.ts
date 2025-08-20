@@ -11,6 +11,7 @@ import { UserUpdateData } from '../../models/users-models/User-admin-update.mode
 // Interface para la respuesta del API
 interface ApiResponse {
   status: string;
+  message?: string;
   user: AdminProfile;
 }
 
@@ -25,7 +26,7 @@ export class UserService {
   ) { }
 
   getCurrentUser(): Observable<AdminProfile> {
-    const token = this.authService.getToken(); // usa el token de AuthService
+    const token = this.authService.getToken();
     return this.http.get<ApiResponse>(`${this.API_URL}/users/me`, {
       headers: {
         'Authorization': `Bearer ${token}`
@@ -42,25 +43,23 @@ export class UserService {
   //       map(response => response.user) // Extrae el objeto user de la respuesta
   //     );
   // }
-updateCurrentUser(userData: UserUpdateData): Observable<AdminProfile> {
-  const token = this.authService.getToken();
-  return this.http.put<ApiResponse>(
-    `${this.API_URL}/users/UpdateCurrentUser`,
-    userData,
-    {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Content-Type': 'application/json'
+  updateCurrentUser(userData: UserUpdateData): Observable<any> {
+    const token = this.authService.getToken();
+    return this.http.put<any>(
+      `${this.API_URL}/users/UpdateCurrentUser`,
+      userData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
-    }
-  ).pipe(
-    map(response => response.user)
-  );
-}
+    );
+  }
 
   updatePassword(id: number, passwordData: { currentPassword: string, newPassword: string }): Observable<any> {
-    const token = this.authService.getToken(); // si también requiere auth
-    return this.http.put(`${this.API_URL}/users/${id}/password`, passwordData, {
+    const token = this.authService.getToken();
+    return this.http.put<any>(`${this.API_URL}/users/${id}/password`, passwordData, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
