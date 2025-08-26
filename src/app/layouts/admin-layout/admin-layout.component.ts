@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { AuthService } from '../../core/auth/services/auth.service';
-import { AdminSidenavComponent } from '../../features/admin/admin-sidenav/admin-sidenav.component';
 import { CommonModule } from '@angular/common';
 import { Subscription } from 'rxjs';
+import { AdminSidenavComponent } from '../../features/admin/components/admin-sidenav/admin-sidenav.component';
 
 @Component({
   selector: 'app-admin-layout',

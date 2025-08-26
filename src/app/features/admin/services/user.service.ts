@@ -4,9 +4,10 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { AdminProfile } from '../../models/users-models/admin-profile.model';
-import { AuthService } from '../../auth/services/auth.service';
-import { UserUpdateData } from '../../models/users-models/User-admin-update.model';
+import { AdminProfile } from '../models/admin-profile.model';
+import { AuthService } from '../../../core/auth/services/auth.service';
+import { UserUpdateData } from '../models/User-admin-update.model';
+
 
 // Interface para la respuesta del API
 interface ApiResponse {

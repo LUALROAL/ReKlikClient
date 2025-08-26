@@ -11,22 +11,28 @@ export const ADMIN_ROUTES: Routes = [
     children: [
       {
         path: 'admin-dashboard',
-        loadComponent: () => import('./admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
+        loadComponent: () => import('./components/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
         canLoad: [AuthGuard, AdminGuard]
       },
       {
         path: 'perfil',
-        loadComponent: () => import('./admin-profile/admin-profile.component').then(m => m.AdminProfileComponent),
+        loadComponent: () => import('./components/admin-profile/admin-profile.component').then(m => m.AdminProfileComponent),
+        canLoad: [AuthGuard, AdminGuard]
+      },
+      {
+        path: 'productos',
+        loadComponent: () => import('../products/components/products-list/products-list.component').then(m => m.ProductsListComponent),
         canLoad: [AuthGuard, AdminGuard]
       }
+      //   path: 'productos',
+      //   // loadComponent: () => import('./admin-products/admin-products.component').then(m => m.AdminProductsComponent)
+      // },
+
       // {
       //   path: 'usuarios',
       //   // loadComponent: () => import('./admin-users/admin-users.component').then(m => m.AdminUsersComponent)
       // },
 
-      //   path: 'productos',
-      //   // loadComponent: () => import('./admin-products/admin-products.component').then(m => m.AdminProductsComponent)
-      // },
 
 
       // {

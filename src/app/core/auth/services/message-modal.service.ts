@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { Message } from '../models/General-models/message-modal.model';
+import { Message } from '../../models/General-models/message-modal.model';
 
 @Injectable({
   providedIn: 'root'

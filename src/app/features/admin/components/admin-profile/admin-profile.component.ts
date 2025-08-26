@@ -4,13 +4,14 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { CommonModule } from '@angular/common';
 import { ToastrService } from 'ngx-toastr';
 
-import { AdminProfile } from '../../../core/models/users-models/admin-profile.model';
-import { UserService } from '../../../core/services/users-services/user.service';
-import { AuthService } from '../../../core/auth/services/auth.service';
-import { LoadingComponent } from '../../../shared/loading/loading.component';
-import { UserUpdateData } from '../../../core/models/users-models/User-admin-update.model';
-import { MessageModalComponent } from '../../../shared/components/message-modal/message-modal.component';
-import { MessageModalService } from '../../../core/services/message-modal.service';
+import { AdminProfile } from '../../models/admin-profile.model';
+
+import { AuthService } from '../../../../core/auth/services/auth.service';
+import { LoadingComponent } from '../../../../shared/loading/loading.component';
+import { UserUpdateData } from '../../models/User-admin-update.model';
+import { MessageModalComponent } from '../../../../shared/components/message-modal/message-modal.component';
+import { MessageModalService } from '../../../../core/auth/services/message-modal.service';
+import { UserService } from '../../services/user.service';
 
 @Component({
   selector: 'app-admin-profile',
