@@ -1,22 +1,40 @@
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Observable } from 'rxjs';
+import { MessageModalService } from '../../../core/auth/services/message-modal.service';
+import { ConfirmationMessage, Message } from '../../../core/models/General-models/message-modal.model';
 
 @Component({
   selector: 'app-message-modal',
   standalone: true,
   imports: [CommonModule],
   templateUrl: './message-modal.component.html',
-  styleUrl: './message-modal.component.scss'
+  styleUrls: ['./message-modal.component.scss']
 })
-export class MessageModalComponent {
-  @Input() visible: boolean = false;
-  @Input() title: string = '';
-  @Input() message: string = '';
-  @Input() type: 'success' | 'error' | 'info' | 'warning' = 'info';
-  @Output() closed = new EventEmitter<void>();
+export class MessageModalComponent implements OnInit {
+  message$: Observable<Message | null>;
+  confirmation$: Observable<ConfirmationMessage | null>;
 
-  onClose(): void {
-    this.visible = false;
-    this.closed.emit();
+  constructor(private messageModalService: MessageModalService) {
+    this.message$ = this.messageModalService.getMessage();
+    this.confirmation$ = this.messageModalService.getConfirmation();
+  }
+
+  ngOnInit(): void {}
+
+  onConfirm(confirmation: ConfirmationMessage | null): void {
+    if (confirmation && confirmation.onConfirm) {
+      confirmation.onConfirm();
+    }
+  }
+
+  onCancel(confirmation: ConfirmationMessage | null): void {
+    if (confirmation && confirmation.onCancel) {
+      confirmation.onCancel();
+    }
+  }
+
+  onCloseMessage(): void {
+    this.messageModalService.hideMessage();
   }
 }
