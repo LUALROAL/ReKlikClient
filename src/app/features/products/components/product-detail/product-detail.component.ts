@@ -12,7 +12,7 @@ import { MessageModalComponent } from '../../../../shared/components/message-mod
   standalone: true,
   imports: [CommonModule, LoadingComponent, MessageModalComponent, RouterModule],
   templateUrl: './product-detail.component.html',
-  styleUrl: './product-detail.component.scss'
+ styleUrls: ['./product-detail.component.scss']
 })
 export class ProductDetailComponent implements OnInit {
   product!: Product;

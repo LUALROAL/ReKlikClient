@@ -1,7 +1,6 @@
-export interface Product {
+export interface ProductUpdate {
   id: number;
   companyId: number;
-  companyName?: string;
   name: string;
   brand?: string;
   description?: string;
@@ -10,6 +9,4 @@ export interface Product {
   recyclable?: boolean;
   recyclingInstructions?: string;
   imageUrl?: string;
-  createdAt?: Date;
-  updatedAt?: Date;
 }

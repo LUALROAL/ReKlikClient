@@ -10,18 +10,20 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
-    canActivate: [AuthGuard, AdminGuard],
     children: [
       {
         path: 'admin-dashboard',
+        canActivate: [AuthGuard, AdminGuard],
         loadComponent: () => import('./components/admin-dashboard/admin-dashboard.component').then(m => m.AdminDashboardComponent),
       },
       {
         path: 'perfil',
+        canActivate: [AuthGuard, AdminGuard],
         loadComponent: () => import('./components/admin-profile/admin-profile.component').then(m => m.AdminProfileComponent),
       },
       {
         path: 'productos',
+        canActivate: [AuthGuard, AdminGuard],
         children: [
             {
                 path: '',

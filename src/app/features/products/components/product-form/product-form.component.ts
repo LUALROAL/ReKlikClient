@@ -5,6 +5,10 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageModalService } from '../../../../core/auth/services/message-modal.service';
 import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '../../../../shared/loading/loading.component';
+import { Company } from '../../models/company.model';
+import { CompanyService } from '../../services/company.service';
+import { ProductCreate } from '../../models/product-create.model';
+import { ProductUpdate } from '../../models/product-update.model';
 import { MessageModalComponent } from '../../../../shared/components/message-modal/message-modal.component';
 
 @Component({
@@ -12,7 +16,7 @@ import { MessageModalComponent } from '../../../../shared/components/message-mod
   standalone: true,
   imports:  [CommonModule, ReactiveFormsModule, LoadingComponent, MessageModalComponent],
   templateUrl: './product-form.component.html',
-  styleUrl: './product-form.component.scss'
+  styleUrls: ['./product-form.component.scss']
 })
 export class ProductFormComponent implements OnInit {
   productForm!: FormGroup;
@@ -20,19 +24,14 @@ export class ProductFormComponent implements OnInit {
   productId?: number;
   loading = false;
   submitting = false;
+  companies: Company[] = [];
 
-  // Material types for dropdown
   materialTypes = ['PET', 'vidrio', 'carton', 'aluminio', 'papel', 'plastico', 'metal', 'otros'];
-
-  // Modal properties
-  modalVisible = false;
-  modalTitle = '';
-  modalMessage = '';
-  modalType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private companyService: CompanyService,
     private route: ActivatedRoute,
     private router: Router,
     private messageService: MessageModalService
@@ -40,6 +39,7 @@ export class ProductFormComponent implements OnInit {
 
   ngOnInit(): void {
     this.initForm();
+    this.loadCompanies();
     this.checkEditMode();
   }
 
@@ -47,13 +47,25 @@ export class ProductFormComponent implements OnInit {
     this.productForm = this.fb.group({
       companyId: ['', [Validators.required, Validators.min(1)]],
       name: ['', [Validators.required, Validators.minLength(2)]],
-      brand: ['', Validators.required],
+      brand: [''],
       description: [''],
       materialType: ['', Validators.required],
       weight: [null],
       recyclable: [true],
       recyclingInstructions: [''],
       imageUrl: ['']
+    });
+  }
+
+  loadCompanies(): void {
+    this.companyService.getCompanies().subscribe({
+      next: (companies) => {
+        this.companies = companies;
+      },
+      error: (error) => {
+        console.error('Error loading companies:', error);
+        this.messageService.showError('Error', 'No se pudieron cargar las empresas');
+      }
     });
   }
 
@@ -90,24 +102,22 @@ export class ProductFormComponent implements OnInit {
     }
 
     this.submitting = true;
-    const productData = this.productForm.value;
 
     if (this.isEditMode && this.productId) {
-      // Update existing product
-      const updateData = { ...productData, id: this.productId };
-      this.productService.updateProduct(this.productId, updateData).subscribe({
-        next: (response: any) => {
-          this.handleSuccess(response, 'Producto actualizado correctamente');
+      const productData: ProductUpdate = { id: this.productId, ...this.productForm.value };
+      this.productService.updateProduct(this.productId, productData).subscribe({
+        next: () => {
+          this.handleSuccess('Producto actualizado correctamente');
         },
         error: (error) => {
           this.handleError(error, 'actualizar');
         }
       });
     } else {
-      // Create new product
+      const productData: ProductCreate = this.productForm.value;
       this.productService.createProduct(productData).subscribe({
-        next: (response: any) => {
-          this.handleSuccess(response, 'Producto creado correctamente');
+        next: () => {
+          this.handleSuccess('Producto creado correctamente');
         },
         error: (error) => {
           this.handleError(error, 'crear');
@@ -116,15 +126,10 @@ export class ProductFormComponent implements OnInit {
     }
   }
 
-  private handleSuccess(response: any, defaultMessage: string): void {
+  private handleSuccess(message: string): void {
     this.submitting = false;
-    const message = response.message || defaultMessage;
     this.messageService.showSuccess('Éxito', message);
-
-    // Redirect to products list after a short delay
-    setTimeout(() => {
-      this.router.navigate(['/admin/products']);
-    }, 1500);
+    this.router.navigate(['/admin/productos']);
   }
 
   private handleError(error: any, action: string): void {
@@ -135,23 +140,12 @@ export class ProductFormComponent implements OnInit {
   }
 
   private markFormGroupTouched(): void {
-    Object.keys(this.productForm.controls).forEach(key => {
-      this.productForm.get(key)?.markAsTouched();
+    Object.values(this.productForm.controls).forEach(control => {
+      control.markAsTouched();
     });
   }
 
   onCancel(): void {
-    this.router.navigate(['/admin/products']);
-  }
-
-  showModal(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
-    this.modalTitle = title;
-    this.modalMessage = message;
-    this.modalType = type;
-    this.modalVisible = true;
-  }
-
-  hideModal(): void {
-    this.modalVisible = false;
+    this.router.navigate(['/admin/productos']);
   }
 }

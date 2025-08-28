@@ -1,19 +1,19 @@
 import { Component, OnInit } from '@angular/core';
 import { ProductService } from '../../services/product.service';
-import { MessageModalService } from '../../../../core/auth/services/message-modal.service';
 import { Product } from '../../models/product.model';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { LoadingComponent } from '../../../../shared/loading/loading.component';
 import { MessageModalComponent } from '../../../../shared/components/message-modal/message-modal.component';
 import { FormsModule } from '@angular/forms';
+import { MessageModalService } from '../../../../core/auth/services/message-modal.service';
 
 @Component({
   selector: 'app-products-list',
   standalone: true,
   imports: [CommonModule, RouterModule, LoadingComponent, MessageModalComponent, FormsModule],
   templateUrl: './products-list.component.html',
-  styleUrl: './products-list.component.scss'
+  styleUrls: ['./products-list.component.scss']
 })
 export class ProductsListComponent implements OnInit {
   products: Product[] = [];
@@ -23,14 +23,7 @@ export class ProductsListComponent implements OnInit {
   materialFilter = '';
   recyclableFilter = 'all';
 
-  // Material types for filter
   materialTypes = ['PET', 'vidrio', 'carton', 'aluminio', 'papel', 'plastico', 'metal', 'otros'];
-
-  // Modal properties
-  modalVisible = false;
-  modalTitle = '';
-  modalMessage = '';
-  modalType: 'success' | 'error' | 'info' | 'warning' = 'info';
 
   constructor(
     private productService: ProductService,
@@ -42,28 +35,26 @@ export class ProductsListComponent implements OnInit {
   }
 
   loadProducts(): void {
-  this.loading = true;
-  this.productService.getAllProducts().subscribe({
-    next: (products) => {
-      console.log('Productos recibidos:', products); // Para debug
-      this.products = products;
-      this.filteredProducts = products;
-      this.loading = false;
-    },
-    error: (error) => {
-      console.error('Error loading products:', error);
-      this.messageService.showError('Error', 'No se pudieron cargar los productos');
-      this.loading = false;
-      this.products = [];
-      this.filteredProducts = [];
-    }
-  });
-}
+    this.loading = true;
+    this.productService.getAllProducts().subscribe({
+      next: (products) => {
+        this.products = products;
+        this.filteredProducts = products;
+        this.loading = false;
+      },
+      error: (error) => {
+        console.error('Error loading products:', error);
+        this.messageService.showError('Error', 'No se pudieron cargar los productos');
+        this.loading = false;
+      }
+    });
+  }
+
   applyFilters(): void {
     this.filteredProducts = this.products.filter(product => {
-      const matchesSearch = product.name.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        product.brand.toLowerCase().includes(this.searchTerm.toLowerCase()) ||
-        product.description.toLowerCase().includes(this.searchTerm.toLowerCase());
+      const searchTermLower = this.searchTerm.toLowerCase();
+      const matchesSearch = product.name.toLowerCase().includes(searchTermLower) ||
+        (product.companyName && product.companyName.toLowerCase().includes(searchTermLower));
 
       const matchesMaterial = !this.materialFilter || product.materialType === this.materialFilter;
 
@@ -76,10 +67,11 @@ export class ProductsListComponent implements OnInit {
   }
 
   deleteProduct(id: number): void {
-    if (confirm('¿Estás seguro de que deseas eliminar este producto?')) {
+    debugger
+    this.messageService.showConfirmation('Confirmar Eliminación', '¿Estás seguro de que deseas eliminar este producto?', () => {
       this.productService.deleteProduct(id).subscribe({
-        next: (response: any) => {
-          this.messageService.showSuccess('Éxito', response.message || 'Producto eliminado correctamente');
+        next: () => {
+          this.messageService.showSuccess('Éxito', 'Producto eliminado correctamente');
           this.loadProducts();
         },
         error: (error) => {
@@ -88,17 +80,6 @@ export class ProductsListComponent implements OnInit {
           this.messageService.showError('Error', errorMessage);
         }
       });
-    }
-  }
-
-  showModal(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
-    this.modalTitle = title;
-    this.modalMessage = message;
-    this.modalType = type;
-    this.modalVisible = true;
-  }
-
-  hideModal(): void {
-    this.modalVisible = false;
+    });
   }
 }
