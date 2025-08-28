@@ -18,11 +18,7 @@ export class ProductDetailComponent implements OnInit {
   product!: Product;
   loading = false;
 
-  // Modal properties
-  modalVisible = false;
-  modalTitle = '';
-  modalMessage = '';
-  modalType: 'success' | 'error' | 'info' | 'warning' = 'info';
+
 
   constructor(
     private productService: ProductService,
@@ -69,14 +65,4 @@ export class ProductDetailComponent implements OnInit {
     }
   }
 
-  showModal(title: string, message: string, type: 'success' | 'error' | 'info' | 'warning' = 'info'): void {
-    this.modalTitle = title;
-    this.modalMessage = message;
-    this.modalType = type;
-    this.modalVisible = true;
-  }
-
-  hideModal(): void {
-    this.modalVisible = false;
-  }
 }
