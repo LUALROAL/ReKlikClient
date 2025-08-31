@@ -16,21 +16,24 @@
     <div *ngIf="!loading" class="card p-6">
       <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <!-- Company ID -->
+          <!-- Company -->
           <div>
             <label for="companyId" class="block text-sm font-medium text-secondary mb-1">
-              ID de Empresa *
+              Empresa *
             </label>
-            <input
+            <select
               id="companyId"
-              type="number"
               formControlName="companyId"
               class="input-field"
               [class.input-error]="productForm.get('companyId')?.invalid && productForm.get('companyId')?.touched"
             >
+              <option value="" disabled>Seleccionar empresa</option>
+              <option *ngFor="let company of companies" [value]="company.id">
+                {{ company.name }}
+              </option>
+            </select>
             <div *ngIf="productForm.get('companyId')?.invalid && productForm.get('companyId')?.touched" class="mt-1 text-sm text-red-600">
-              <span *ngIf="productForm.get('companyId')?.errors?.['required']">El ID de empresa es requerido</span>
-              <span *ngIf="productForm.get('companyId')?.errors?.['min']">El ID debe ser mayor a 0</span>
+              <span *ngIf="productForm.get('companyId')?.errors?.['required']">La empresa es requerida</span>
             </div>
           </div>
 

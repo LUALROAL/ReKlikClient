@@ -5,11 +5,12 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MessageModalService } from '../../../../core/auth/services/message-modal.service';
 import { CommonModule } from '@angular/common';
 import { LoadingComponent } from '../../../../shared/loading/loading.component';
-import { Company } from '../../models/company.model';
-import { CompanyService } from '../../services/company.service';
+
 import { ProductCreate } from '../../models/product-create.model';
 import { ProductUpdate } from '../../models/product-update.model';
 import { MessageModalComponent } from '../../../../shared/components/message-modal/message-modal.component';
+import { CompanyService } from '../../../companies/services/company.service';
+import { Company } from '../../../companies/models/company.model';
 
 @Component({
   selector: 'app-product-form',
@@ -59,8 +60,13 @@ export class ProductFormComponent implements OnInit {
 
   loadCompanies(): void {
     this.companyService.getCompanies().subscribe({
-      next: (companies) => {
-        this.companies = companies;
+      next: (response) => {
+        if (response.success) {
+          this.companies = response.data;
+        } else {
+          console.error('Error loading companies:', response.message);
+          this.messageService.showError('Error', 'No se pudieron cargar las empresas');
+        }
       },
       error: (error) => {
         console.error('Error loading companies:', error);

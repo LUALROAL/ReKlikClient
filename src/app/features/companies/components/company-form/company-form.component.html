@@ -1,0 +1,127 @@
+<!-- company-form.component.html -->
+<div class="min-h-screen bg-warm-white p-6">
+  <div class="max-w-4xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-secondary mb-2">
+        {{ isEditMode ? 'Editar Compañía' : 'Crear Compañía' }}
+      </h1>
+      <p class="text-secondary-light">
+        {{ isEditMode ? 'Modifica la información de la compañía' : 'Agrega una nueva compañía al sistema' }}
+      </p>
+    </div>
+
+    <app-loading *ngIf="loading"></app-loading>
+
+    <!-- Form -->
+    <div *ngIf="!loading" class="card p-6">
+      <form [formGroup]="companyForm" (ngSubmit)="onSubmit()" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Name -->
+          <div>
+            <label for="name" class="block text-sm font-medium text-secondary mb-1">
+              Nombre *
+            </label>
+            <input
+              id="name"
+              type="text"
+              formControlName="name"
+              class="input-field"
+              [class.input-error]="companyForm.get('name')?.invalid && companyForm.get('name')?.touched"
+            >
+            <div *ngIf="companyForm.get('name')?.invalid && companyForm.get('name')?.touched" class="mt-1 text-sm text-red-600">
+              <span *ngIf="companyForm.get('name')?.errors?.['required']">El nombre es requerido</span>
+              <span *ngIf="companyForm.get('name')?.errors?.['minlength']">El nombre debe tener al menos 2 caracteres</span>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div>
+            <label for="email" class="block text-sm font-medium text-secondary mb-1">
+              Email *
+            </label>
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              class="input-field"
+              [class.input-error]="companyForm.get('email')?.invalid && companyForm.get('email')?.touched"
+            >
+            <div *ngIf="companyForm.get('email')?.invalid && companyForm.get('email')?.touched" class="mt-1 text-sm text-red-600">
+              <span *ngIf="companyForm.get('email')?.errors?.['required']">El email es requerido</span>
+              <span *ngIf="companyForm.get('email')?.errors?.['email']">El formato del email no es válido</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Contact Person -->
+          <div>
+            <label for="contactPerson" class="block text-sm font-medium text-secondary mb-1">
+              Persona de Contacto
+            </label>
+            <input
+              id="contactPerson"
+              type="text"
+              formControlName="contactPerson"
+              class="input-field"
+            >
+          </div>
+
+          <!-- Phone -->
+          <div>
+            <label for="phone" class="block text-sm font-medium text-secondary mb-1">
+              Teléfono
+            </label>
+            <input
+              id="phone"
+              type="text"
+              formControlName="phone"
+              class="input-field"
+            >
+          </div>
+        </div>
+
+        <!-- Address -->
+        <div>
+          <label for="address" class="block text-sm font-medium text-secondary mb-1">
+            Dirección
+          </label>
+          <textarea
+            id="address"
+            formControlName="address"
+            rows="3"
+            class="input-field"
+          ></textarea>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="flex justify-end space-x-4 pt-6">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="px-4 py-2 border border-gray-300 rounded-lg text-secondary hover:bg-gray-50 transition-colors"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="submitting"
+            class="btn-primary px-4 py-2 rounded-lg disabled:opacity-50"
+          >
+            <span *ngIf="submitting" class="flex items-center">
+              <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              {{ isEditMode ? 'Actualizando...' : 'Creando...' }}
+            </span>
+            <span *ngIf="!submitting">
+              {{ isEditMode ? 'Actualizar Compañía' : 'Crear Compañía' }}
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
