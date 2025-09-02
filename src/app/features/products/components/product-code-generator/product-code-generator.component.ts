@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule } from '@angular/forms';
 import { ProductCode } from '../../models/product-code.model';
 import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 @Component({
   selector: 'app-product-code-generator',
@@ -94,5 +95,65 @@ export class ProductCodeGeneratorComponent implements OnInit {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  exportToPdf(): void {
+    if (this.generatedCodes.length === 0) {
+      return;
+    }
+
+    // Obtener el nombre del producto seleccionado
+    const productId = this.generatorForm.value.productId;
+    const product = this.products.find(p => p.id === productId);
+    const productName = product ? product.name : 'Producto';
+
+    // Crear nuevo documento PDF
+    const doc = new jsPDF();
+
+    // Añadir título
+    const title = `Códigos de Producto - ${productName}`;
+    const date = new Date().toLocaleDateString('es-ES');
+
+    doc.setFontSize(18);
+    doc.text(title, 14, 15);
+    doc.setFontSize(11);
+    doc.setTextColor(100, 100, 100);
+    doc.text(`Generado el: ${date}`, 14, 22);
+
+    // Preparar datos para la tabla
+    const tableData = this.generatedCodes.map(code => [
+      code.uuidCode,
+      code.batchNumber || 'N/A',
+      new Date(code.generatedAt).toLocaleString('es-ES')
+    ]);
+
+    // Añadir tabla al PDF
+    autoTable(doc, {
+      startY: 30,
+      head: [['UUID', 'Número de Lote', 'Fecha de Generación']],
+      body: tableData,
+      theme: 'grid',
+      headStyles: {
+        fillColor: [59, 130, 246],
+        textColor: 255
+      },
+      alternateRowStyles: {
+        fillColor: [240, 240, 240]
+      },
+      margin: { top: 30 },
+      styles: {
+        fontSize: 9,
+        cellPadding: 2,
+        overflow: 'linebreak'
+      },
+      columnStyles: {
+        0: { cellWidth: 70 },
+        1: { cellWidth: 40 },
+        2: { cellWidth: 40 }
+      }
+    });
+
+    // Guardar PDF
+    doc.save(`codigos-${productName.toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`);
   }
 }
