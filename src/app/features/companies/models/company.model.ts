@@ -6,6 +6,7 @@ export interface Company {
     contactPerson?: string | null;
     phone?: string | null;
     address?: string | null;
+    imageUrl?: string;
     createdAt?: string;
     updatedAt?: string;
 }

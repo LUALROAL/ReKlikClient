@@ -69,15 +69,18 @@ export class CompaniesComponent implements OnInit {
       return;
     }
 
+    const formData = new FormData();
+    Object.keys(this.companyForm.controls).forEach(key => {
+      formData.append(key, this.companyForm.get(key)?.value);
+    });
+
     if (this.isEditing && this.currentCompanyId) {
-      const updatedCompany: Company = { id: this.currentCompanyId, ...this.companyForm.value };
-      this.companyService.updateCompany(this.currentCompanyId, updatedCompany).subscribe(() => {
+      this.companyService.updateCompany(this.currentCompanyId, formData).subscribe(() => {
         this.loadCompanies();
         this.closeModal();
       });
     } else {
-      const newCompany: CompanyCreateDTO = this.companyForm.value;
-      this.companyService.createCompany(newCompany).subscribe(() => {
+      this.companyService.createCompany(formData).subscribe(() => {
         this.loadCompanies();
         this.closeModal();
       });

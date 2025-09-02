@@ -68,6 +68,10 @@ export const ADMIN_ROUTES: Routes = [
           {
             path: 'detalles/:id',
             component: ProductDetailComponent
+          },
+          {
+            path: 'generar-codigos',
+            loadComponent: () => import('../products/components/product-code-generator/product-code-generator.component').then(m => m.ProductCodeGeneratorComponent)
           }
         ]
       }

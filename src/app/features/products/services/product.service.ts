@@ -7,6 +7,8 @@ import { Product } from '../models/product.model';
 import { ProductCreate } from '../models/product-create.model';
 import { ProductUpdate } from '../models/product-update.model';
 import { ApiResponse } from '../../../shared/models/api-response.model';
+import { GenerateCodes } from '../models/generate-codes.model';
+import { ProductCode } from '../models/product-code.model';
 
 @Injectable({
   providedIn: 'root'
@@ -71,6 +73,14 @@ export class ProductService {
   getProductsByCompany(companyId: number): Observable<Product[]> {
     return this.http.get<ApiResponse<Product[]>>(`${this.API_URL}/company/${companyId}`).pipe(
       map(response => response.data || [])
+    );
+  }
+
+  generateCodes(productId: number, data: GenerateCodes): Observable<ProductCode[]> {
+    return this.http.post<ApiResponse<ProductCode[]>>(`${this.API_URL}/${productId}/generate-codes`, data, {
+      headers: this.getAuthHeaders()
+    }).pipe(
+      map(response => response.data)
     );
   }
 }

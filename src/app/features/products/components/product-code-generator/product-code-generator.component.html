@@ -1,0 +1,73 @@
+<div class="container mt-4">
+  <h2>Generador de Códigos de Producto</h2>
+
+  <form [formGroup]="generatorForm" (ngSubmit)="onGenerate()" class="card p-4 mb-4">
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="product" class="form-label">Producto</label>
+        <select id="product" formControlName="productId" class="form-select"
+          [class.is-invalid]="generatorForm.get('productId')?.invalid && generatorForm.get('productId')?.touched">
+          <option [ngValue]="null" disabled>Seleccione un producto</option>
+          <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+        </select>
+        <div *ngIf="generatorForm.get('productId')?.invalid && generatorForm.get('productId')?.touched" class="invalid-feedback">
+          Debe seleccionar un producto.
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <label for="quantity" class="form-label">Cantidad</label>
+        <input type="number" id="quantity" formControlName="quantity" class="form-control"
+          [class.is-invalid]="generatorForm.get('quantity')?.invalid && generatorForm.get('quantity')?.touched">
+        <div *ngIf="generatorForm.get('quantity')?.invalid && generatorForm.get('quantity')?.touched" class="invalid-feedback">
+          <div *ngIf="generatorForm.get('quantity')?.errors?.['required']">La cantidad es requerida.</div>
+          <div *ngIf="generatorForm.get('quantity')?.errors?.['min']">La cantidad debe ser al menos 1.</div>
+          <div *ngIf="generatorForm.get('quantity')?.errors?.['max']">La cantidad no puede ser mayor a 10,000.</div>
+        </div>
+      </div>
+
+      <div class="col-md-3 mb-3">
+        <label for="batchNumber" class="form-label">Número de Lote (Opcional)</label>
+        <input type="text" id="batchNumber" formControlName="batchNumber" class="form-control">
+      </div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+      <button type="submit" class="btn btn-primary" [disabled]="generatorForm.invalid || isLoading">
+        <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+        {{ isLoading ? 'Generando...' : 'Generar Códigos' }}
+      </button>
+    </div>
+  </form>
+
+  <div *ngIf="errorMessage" class="alert alert-danger">
+    {{ errorMessage }}
+  </div>
+
+  <div *ngIf="generatedCodes.length > 0" class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+      <h5>Códigos Generados ({{ generatedCodes.length }})</h5>
+      <button class="btn btn-success btn-sm" (click)="exportToCsv()">
+        Exportar a CSV
+      </button>
+    </div>
+    <div class="table-responsive">
+      <table class="table table-striped table-hover mb-0">
+        <thead>
+          <tr>
+            <th>UUID</th>
+            <th>Número de Lote</th>
+            <th>Fecha de Generación</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let code of generatedCodes">
+            <td><code>{{ code.uuidCode }}</code></td>
+            <td>{{ code.batchNumber || 'N/A' }}</td>
+            <td>{{ code.generatedAt | date:'medium' }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

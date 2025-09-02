@@ -22,6 +22,8 @@ export class CompanyFormComponent implements OnInit {
   companyId?: number;
   loading = false;
   submitting = false;
+  selectedFile: File | null = null;
+  imagePreview: string | ArrayBuffer | null = null;
 
   constructor(
     private fb: FormBuilder,
@@ -62,6 +64,9 @@ export class CompanyFormComponent implements OnInit {
       next: (response) => {
         if (response.success && response.data) {
           this.companyForm.patchValue(response.data);
+          if (response.data.imageUrl) {
+            this.imagePreview = response.data.imageUrl;
+          }
         } else {
           this.messageService.showError('Error', response.message || 'No se pudo cargar la compañía');
         }
@@ -75,6 +80,20 @@ export class CompanyFormComponent implements OnInit {
     });
   }
 
+  onFileSelect(event: Event): void {
+    const target = event.target as HTMLInputElement;
+    if (target.files && target.files.length > 0) {
+      const file = target.files[0];
+      this.selectedFile = file;
+
+      const reader = new FileReader();
+      reader.onload = () => {
+        this.imagePreview = reader.result;
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
   onSubmit(): void {
     if (this.companyForm.invalid) {
       this.messageService.showWarning('Advertencia', 'Por favor complete todos los campos requeridos');
@@ -84,9 +103,18 @@ export class CompanyFormComponent implements OnInit {
 
     this.submitting = true;
 
+    const formData = new FormData();
+    Object.keys(this.companyForm.value).forEach(key => {
+      formData.append(key, this.companyForm.value[key]);
+    });
+
+    if (this.selectedFile) {
+      formData.append('image', this.selectedFile, this.selectedFile.name);
+    }
+
     if (this.isEditMode && this.companyId) {
-      const companyData: Company = { id: this.companyId, ...this.companyForm.value };
-      this.companyService.updateCompany(this.companyId, companyData).subscribe({
+      formData.append('id', this.companyId.toString());
+      this.companyService.updateCompany(this.companyId, formData).subscribe({
         next: (response) => {
           if (response.success) {
             this.handleSuccess('Compañía actualizada correctamente');
@@ -99,8 +127,7 @@ export class CompanyFormComponent implements OnInit {
         }
       });
     } else {
-      const companyData: CompanyCreateDTO = this.companyForm.value;
-      this.companyService.createCompany(companyData).subscribe({
+      this.companyService.createCompany(formData).subscribe({
         next: (response) => {
           if (response.success) {
             this.handleSuccess('Compañía creada correctamente');

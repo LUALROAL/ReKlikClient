@@ -41,12 +41,12 @@ export class CompanyService {
     return this.http.get<ApiResponse<Company>>(`${this.apiUrl}/${id}`);
   }
 
-  createCompany(company: CompanyCreateDTO): Observable<ApiResponse<Company>> {
-    return this.http.post<ApiResponse<Company>>(this.apiUrl, company);
+  createCompany(company: FormData): Observable<ApiResponse<Company>> {
+    return this.http.post<ApiResponse<Company>>(this.apiUrl, company, { headers: this.getAuthHeaders() });
   }
 
-  updateCompany(id: number, company: Company): Observable<ApiResponse<boolean>> {
-    return this.http.put<ApiResponse<boolean>>(`${this.apiUrl}/${id}`, company);
+  updateCompany(id: number, company: FormData): Observable<ApiResponse<boolean>> {
+    return this.http.put<ApiResponse<boolean>>(`${this.apiUrl}/${id}`, company, { headers: this.getAuthHeaders() });
   }
 
   deleteCompany(id: number): Observable<ApiResponse<boolean>> {
