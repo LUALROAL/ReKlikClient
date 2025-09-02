@@ -9,6 +9,9 @@ import { ProductDetailComponent } from '../products/components/product-detail/pr
 import { CompaniesListComponent } from '../companies/components/companies-list/companies-list.component';
 import { CompanyFormComponent } from '../companies/components/company-form/company-form.component';
 import { CompanyDetailComponent } from '../companies/components/company-detail/company-detail.component';
+import path from 'path';
+import { ProductCodeGeneratorComponent } from '../products/components/product-code-generator/product-code-generator.component';
+import { CodesListComponent } from '../products/components/codes-list/codes-list.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
@@ -68,10 +71,30 @@ export const ADMIN_ROUTES: Routes = [
           {
             path: 'detalles/:id',
             component: ProductDetailComponent
+          }
+          // {
+          //   path: 'generar-codigos',
+          //   component: ProductCodeGeneratorComponent
+          // },
+          // {
+          //   path: 'ver-codigos',
+          //   component: CodesListComponent
+          // }
+
+        ]
+      },
+      {
+        path: 'generar-codigos',
+          canActivate: [AuthGuard, AdminGuard],
+        children: [
+          {
+            path: '',
+            component: ProductCodeGeneratorComponent,
+            pathMatch: 'full'
           },
           {
-            path: 'generar-codigos',
-            loadComponent: () => import('../products/components/product-code-generator/product-code-generator.component').then(m => m.ProductCodeGeneratorComponent)
+            path: 'ver-codigos',
+            component: CodesListComponent
           }
         ]
       }

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { AuthService } from '../../../core/auth/services/auth.service';
 import { catchError, map, Observable, of } from 'rxjs';
 import { Product } from '../models/product.model';
@@ -8,13 +8,15 @@ import { ProductCreate } from '../models/product-create.model';
 import { ProductUpdate } from '../models/product-update.model';
 import { ApiResponse } from '../../../shared/models/api-response.model';
 import { GenerateCodes } from '../models/generate-codes.model';
-import { ProductCode } from '../models/product-code.model';
+import { ProductCode, ProductCodeWithProduct } from '../models/product-code.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
   private readonly API_URL = `${environment.apiUrl}/products`;
+
+  private readonly PRODUCT_CODES_URL = `${environment.apiUrl}/codes`;
 
   constructor(
     private http: HttpClient,
@@ -82,5 +84,32 @@ export class ProductService {
     }).pipe(
       map(response => response.data)
     );
+  }
+
+  getAllCodes(filters: any, page: number = 1, pageSize: number = 50): Observable<ApiResponse<ProductCodeWithProduct[]>> {
+    const params = this.buildFilterParams(filters, page, pageSize);
+    // Cambia la URL para que apunte al controlador correcto
+    return this.http.get<ApiResponse<ProductCodeWithProduct[]>>(this.PRODUCT_CODES_URL, { params });
+  }
+
+  private buildFilterParams(filters: any, page: number, pageSize: number): HttpParams {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('pageSize', pageSize.toString());
+
+    if (filters.batchNumber) {
+      params = params.set('batchNumber', filters.batchNumber);
+    }
+    if (filters.productName) {
+      params = params.set('productName', filters.productName);
+    }
+    if (filters.startDate) {
+      params = params.set('startDate', filters.startDate.toISOString());
+    }
+    if (filters.endDate) {
+      params = params.set('endDate', filters.endDate.toISOString());
+    }
+
+    return params;
   }
 }

@@ -7,11 +7,12 @@ import { Product } from '../../models/product.model';
 import { ProductService } from '../../services/product.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-product-code-generator',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './product-code-generator.component.html',
   styleUrls: ['./product-code-generator.component.scss']
 })
