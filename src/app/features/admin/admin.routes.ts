@@ -5,7 +5,7 @@ import { AuthGuard } from '../../core/auth/guards/auth.guard';
 import { ProductsListComponent } from '../products/components/products-list/products-list.component';
 import { ProductFormComponent } from '../products/components/product-form/product-form.component';
 import { ProductDetailComponent } from '../products/components/product-detail/product-detail.component';
-import { CompaniesComponent } from '../companies/companies.component';
+
 import { CompaniesListComponent } from '../companies/components/companies-list/companies-list.component';
 import { CompanyFormComponent } from '../companies/components/company-form/company-form.component';
 import { CompanyDetailComponent } from '../companies/components/company-detail/company-detail.component';

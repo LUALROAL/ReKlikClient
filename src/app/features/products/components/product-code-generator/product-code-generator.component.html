@@ -1,73 +1,113 @@
-<div class="container mt-4">
-  <h2>Generador de Códigos de Producto</h2>
+<div class="bg-warm-white min-h-screen p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-6">
+      <h1 class="text-3xl font-bold text-secondary mb-2">Generador de Códigos de Producto</h1>
+      <p class="text-secondary-light">Genera códigos UUID únicos para tus productos reciclables</p>
+    </div>
 
-  <form [formGroup]="generatorForm" (ngSubmit)="onGenerate()" class="card p-4 mb-4">
-    <div class="row">
-      <div class="col-md-6 mb-3">
-        <label for="product" class="form-label">Producto</label>
-        <select id="product" formControlName="productId" class="form-select"
-          [class.is-invalid]="generatorForm.get('productId')?.invalid && generatorForm.get('productId')?.touched">
-          <option [ngValue]="null" disabled>Seleccione un producto</option>
-          <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
-        </select>
-        <div *ngIf="generatorForm.get('productId')?.invalid && generatorForm.get('productId')?.touched" class="invalid-feedback">
-          Debe seleccionar un producto.
+    <!-- Form Card -->
+    <div class="card p-6 mb-6">
+      <form [formGroup]="generatorForm" (ngSubmit)="onGenerate()">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <!-- Product Select -->
+          <div>
+            <label class="block text-sm font-medium text-secondary mb-1">Producto</label>
+            <select
+              id="product"
+              formControlName="productId"
+              class="input-field"
+              [class.input-error]="generatorForm.get('productId')?.invalid && generatorForm.get('productId')?.touched">
+              <option [ngValue]="null" disabled>Seleccione un producto</option>
+              <option *ngFor="let product of products" [value]="product.id">{{ product.name }}</option>
+            </select>
+            <div *ngIf="generatorForm.get('productId')?.invalid && generatorForm.get('productId')?.touched" class="text-red-500 text-xs mt-1">
+              Debe seleccionar un producto.
+            </div>
+          </div>
+
+          <!-- Quantity Input -->
+          <div>
+            <label class="block text-sm font-medium text-secondary mb-1">Cantidad</label>
+            <input
+              type="number"
+              id="quantity"
+              formControlName="quantity"
+              class="input-field"
+              [class.input-error]="generatorForm.get('quantity')?.invalid && generatorForm.get('quantity')?.touched">
+            <div *ngIf="generatorForm.get('quantity')?.invalid && generatorForm.get('quantity')?.touched" class="text-red-500 text-xs mt-1">
+              <div *ngIf="generatorForm.get('quantity')?.errors?.['required']">La cantidad es requerida.</div>
+              <div *ngIf="generatorForm.get('quantity')?.errors?.['min']">La cantidad debe ser al menos 1.</div>
+              <div *ngIf="generatorForm.get('quantity')?.errors?.['max']">La cantidad no puede ser mayor a 10,000.</div>
+            </div>
+          </div>
+
+          <!-- Batch Number Input -->
+          <div>
+            <label class="block text-sm font-medium text-secondary mb-1">Número de Lote (Opcional)</label>
+            <input
+              type="text"
+              id="batchNumber"
+              formControlName="batchNumber"
+              class="input-field">
+          </div>
         </div>
-      </div>
 
-      <div class="col-md-3 mb-3">
-        <label for="quantity" class="form-label">Cantidad</label>
-        <input type="number" id="quantity" formControlName="quantity" class="form-control"
-          [class.is-invalid]="generatorForm.get('quantity')?.invalid && generatorForm.get('quantity')?.touched">
-        <div *ngIf="generatorForm.get('quantity')?.invalid && generatorForm.get('quantity')?.touched" class="invalid-feedback">
-          <div *ngIf="generatorForm.get('quantity')?.errors?.['required']">La cantidad es requerida.</div>
-          <div *ngIf="generatorForm.get('quantity')?.errors?.['min']">La cantidad debe ser al menos 1.</div>
-          <div *ngIf="generatorForm.get('quantity')?.errors?.['max']">La cantidad no puede ser mayor a 10,000.</div>
+        <div class="flex justify-end mt-6">
+          <button
+            type="submit"
+            class="btn-primary px-4 py-2 rounded-lg disabled:opacity-50"
+            [disabled]="generatorForm.invalid || isLoading">
+            <span *ngIf="isLoading" class="inline-block animate-spin mr-2">⟳</span>
+            {{ isLoading ? 'Generando...' : 'Generar Códigos' }}
+          </button>
         </div>
+      </form>
+    </div>
+
+    <!-- Error Message -->
+    <div *ngIf="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
+      {{ errorMessage }}
+    </div>
+
+    <!-- Generated Codes -->
+    <div *ngIf="generatedCodes.length > 0" class="card overflow-hidden">
+      <div class="flex justify-between items-center p-6 border-b">
+        <h2 class="text-xl font-semibold text-secondary">Códigos Generados ({{ generatedCodes.length }})</h2>
+        <button
+         class="px-4 py-2 border border-gray-300 rounded-lg text-secondary hover:bg-gray-50 transition-colors"
+          (click)="exportToCsv()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Exportar a CSV
+        </button>
       </div>
 
-      <div class="col-md-3 mb-3">
-        <label for="batchNumber" class="form-label">Número de Lote (Opcional)</label>
-        <input type="text" id="batchNumber" formControlName="batchNumber" class="form-control">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-secondary">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-warm-white uppercase tracking-wider">UUID</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-warm-white uppercase tracking-wider">Número de Lote</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-warm-white uppercase tracking-wider">Fecha de Generación</th>
+            </tr>
+          </thead>
+          <tbody class="bg-pure-white divide-y divide-gray-200">
+            <tr *ngFor="let code of generatedCodes" class="hover:bg-gray-50">
+              <td class="px-6 py-4 whitespace-nowrap">
+                <code class="text-sm text-secondary bg-gray-100 px-2 py-1 rounded">{{ code.uuidCode }}</code>
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary">
+                {{ code.batchNumber || 'N/A' }}
+              </td>
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary">
+                {{ code.generatedAt | date:'medium' }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
-    </div>
-
-    <div class="d-flex justify-content-end">
-      <button type="submit" class="btn btn-primary" [disabled]="generatorForm.invalid || isLoading">
-        <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
-        {{ isLoading ? 'Generando...' : 'Generar Códigos' }}
-      </button>
-    </div>
-  </form>
-
-  <div *ngIf="errorMessage" class="alert alert-danger">
-    {{ errorMessage }}
-  </div>
-
-  <div *ngIf="generatedCodes.length > 0" class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-      <h5>Códigos Generados ({{ generatedCodes.length }})</h5>
-      <button class="btn btn-success btn-sm" (click)="exportToCsv()">
-        Exportar a CSV
-      </button>
-    </div>
-    <div class="table-responsive">
-      <table class="table table-striped table-hover mb-0">
-        <thead>
-          <tr>
-            <th>UUID</th>
-            <th>Número de Lote</th>
-            <th>Fecha de Generación</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let code of generatedCodes">
-            <td><code>{{ code.uuidCode }}</code></td>
-            <td>{{ code.batchNumber || 'N/A' }}</td>
-            <td>{{ code.generatedAt | date:'medium' }}</td>
-          </tr>
-        </tbody>
-      </table>
     </div>
   </div>
 </div>
