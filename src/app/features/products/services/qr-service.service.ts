@@ -87,25 +87,41 @@ export class QrService {
     ctx.fill();
   }
 
-  async exportMultipleQRCodes(codes: { uuid: string, dataUrl: string }[]): Promise<void> {
-    const zip = new JSZip();
+  // services/qr-service.service.ts (mejoras adicionales)
+async exportMultipleQRCodes(codes: { uuid: string, dataUrl: string }[]): Promise<void> {
+  if (codes.length === 0) {
+    throw new Error('No hay códigos QR para exportar');
+  }
 
-    for (const code of codes) {
-      try {
-        // Convertir data URL a blob
-        const response = await fetch(code.dataUrl);
-        const blob = await response.blob();
-        zip.file(`qr-${code.uuid}.png`, blob);
-      } catch (error) {
-        console.error('Error processing QR code:', error);
-      }
-    }
+  const zip = new JSZip();
 
+  for (const code of codes) {
     try {
-      const content = await zip.generateAsync({ type: 'blob' });
-      saveAs(content, 'qr-codes.zip');
+      // Convertir data URL a blob
+      const response = await fetch(code.dataUrl);
+      if (!response.ok) {
+        throw new Error(`Error fetching QR code for ${code.uuid}`);
+      }
+
+      const blob = await response.blob();
+      zip.file(`qr-${code.uuid}.png`, blob);
     } catch (error) {
-      console.error('Error creating ZIP file:', error);
+      console.error(`Error processing QR code ${code.uuid}:`, error);
+      // Continuar con los demás códigos aunque falle uno
     }
   }
+
+  try {
+    const content = await zip.generateAsync({
+      type: 'blob',
+      compression: 'DEFLATE',
+      compressionOptions: { level: 6 }
+    });
+
+    saveAs(content, `qr-codes-${new Date().toISOString().split('T')[0]}.zip`);
+  } catch (error) {
+    console.error('Error creating ZIP file:', error);
+    throw new Error('No se pudo crear el archivo ZIP');
+  }
+}
 }

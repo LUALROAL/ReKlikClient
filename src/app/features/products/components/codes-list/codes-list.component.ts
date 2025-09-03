@@ -27,6 +27,9 @@ export class CodesListComponent implements OnInit {
   totalCount = 0;
   generatingAllQR = false;
 
+  // Para usar Math en el template
+  Math = Math;
+
   constructor(
     private productService: ProductService,
     private qrService: QrService,
@@ -54,6 +57,12 @@ export class CodesListComponent implements OnInit {
         this.codes = response.data;
         this.totalCount = response.totalCount || response.data.length;
         this.isLoading = false;
+
+        // Limpiar los QR existentes al cargar nuevos códigos
+        this.codes.forEach(code => {
+          code.qrSafeUrl = undefined;
+          code.qrDataUrl = undefined;
+        });
       },
       error: (error) => {
         console.error('Error loading codes:', error);
@@ -72,11 +81,17 @@ export class CodesListComponent implements OnInit {
       code.qrDataUrl = qrResult.dataUrl;
     } catch (error) {
       console.error('Error generating QR for code:', code.uuidCode, error);
+      alert('Error al generar el código QR. Por favor, intente nuevamente.');
     }
     code.generatingQR = false;
   }
 
   async generateAllQRCodes(): Promise<void> {
+    if (this.codes.length === 0) {
+      alert('No hay códigos para generar QR');
+      return;
+    }
+
     this.generatingAllQR = true;
 
     for (const code of this.codes) {
@@ -89,7 +104,10 @@ export class CodesListComponent implements OnInit {
   }
 
   downloadQR(code: any): void {
-    if (!code.qrDataUrl) return;
+    if (!code.qrDataUrl) {
+      alert('Primero debe generar el código QR');
+      return;
+    }
 
     const link = document.createElement('a');
     link.href = code.qrDataUrl;
@@ -107,12 +125,17 @@ export class CodesListComponent implements OnInit {
       return;
     }
 
-    const codesWithData = codesWithQR.map(code => ({
-      uuid: code.uuidCode,
-      dataUrl: code.qrDataUrl!
-    }));
+    try {
+      const codesWithData = codesWithQR.map(code => ({
+        uuid: code.uuidCode,
+        dataUrl: code.qrDataUrl!
+      }));
 
-    await this.qrService.exportMultipleQRCodes(codesWithData);
+      await this.qrService.exportMultipleQRCodes(codesWithData);
+    } catch (error) {
+      console.error('Error exporting QR codes:', error);
+      alert('Error al exportar los códigos QR. Por favor, intente nuevamente.');
+    }
   }
 
   onFilter(): void {
@@ -129,5 +152,19 @@ export class CodesListComponent implements OnInit {
     this.filterForm.reset();
     this.currentPage = 1;
     this.loadCodes();
+  }
+
+  // Método para obtener el rango de páginas para mostrar
+  getPageRange(): number[] {
+    const totalPages = Math.ceil(this.totalCount / this.pageSize);
+    const range = [];
+    const start = Math.max(1, this.currentPage - 2);
+    const end = Math.min(totalPages, this.currentPage + 2);
+
+    for (let i = start; i <= end; i++) {
+      range.push(i);
+    }
+
+    return range;
   }
 }

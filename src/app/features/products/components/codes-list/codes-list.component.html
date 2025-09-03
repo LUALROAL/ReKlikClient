@@ -52,14 +52,14 @@
       <button
         (click)="generateAllQRCodes()"
         [disabled]="generatingAllQR"
-        class="btn-primary px-4 py-2 rounded-lg flex items-center">
+        class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center disabled:opacity-50">
         <span *ngIf="generatingAllQR" class="inline-block animate-spin mr-2">⟳</span>
         {{ generatingAllQR ? 'Generando QR...' : 'Generar Todos los QR' }}
       </button>
 
       <button
         (click)="exportAllQRCodes()"
-        class="btn-secondary px-4 py-2 rounded-lg flex items-center">
+        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/>
         </svg>
@@ -95,12 +95,12 @@
                 <div *ngIf="code.qrSafeUrl" class="w-16 h-16 bg-white p-1 border rounded">
                   <img [src]="code.qrSafeUrl" alt="QR Code" class="w-full h-full object-contain">
                 </div>
-                <div *ngIf="!code.qrSafeUrl && !code.generatingQR" class="w-16 h-16 bg-gray-100 flex items-center justify-center">
+                <div *ngIf="!code.qrSafeUrl && !code.generatingQR" class="w-16 h-16 bg-gray-100 flex items-center justify-center text-gray-400">
                   <button
                     (click)="generateQRForCode(code)"
-                    class="text-blue-600 hover:text-blue-800"
+                    class="text-blue-600 hover:text-blue-800 transition-colors"
                     title="Generar QR">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
                     </svg>
                   </button>
@@ -128,15 +128,34 @@
                 {{ code.generatedAt | date:'medium' }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-sm text-secondary">
-                <button
-                  *ngIf="code.qrSafeUrl"
-                  (click)="downloadQR(code)"
-                  class="text-blue-600 hover:text-blue-800 transition-colors"
-                  title="Descargar QR">
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                    <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                  </svg>
-                </button>
+                <div class="flex space-x-2">
+                  <!-- Botón para generar QR -->
+                  <button
+                    *ngIf="!code.qrSafeUrl && !code.generatingQR"
+                    (click)="generateQRForCode(code)"
+                    class="text-blue-600 hover:text-blue-800 transition-colors"
+                    title="Generar QR">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/>
+                    </svg>
+                  </button>
+
+                  <!-- Indicador de carga -->
+                  <div *ngIf="code.generatingQR" class="text-blue-600">
+                    <div class="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-600"></div>
+                  </div>
+
+                  <!-- Botón para descargar QR -->
+                  <button
+                    *ngIf="code.qrSafeUrl"
+                    (click)="downloadQR(code)"
+                    class="text-green-600 hover:text-green-800 transition-colors"
+                    title="Descargar QR">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                    </svg>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -148,18 +167,18 @@
         <button
           [disabled]="currentPage === 1"
           (click)="onPageChange(currentPage - 1)"
-          class="btn-secondary px-3 py-1 rounded disabled:opacity-50">
+          class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors disabled:opacity-50">
           Anterior
         </button>
 
         <span class="text-sm text-secondary">
-          Página {{ currentPage }}
+          Página {{ currentPage }} de {{ Math.ceil(totalCount / pageSize) }}
         </span>
 
         <button
-          [disabled]="codes.length < pageSize"
+          [disabled]="currentPage >= Math.ceil(totalCount / pageSize)"
           (click)="onPageChange(currentPage + 1)"
-          class="btn-secondary px-3 py-1 rounded disabled:opacity-50">
+          class="px-3 py-1 bg-gray-300 text-gray-700 rounded hover:bg-gray-400 transition-colors disabled:opacity-50">
           Siguiente
         </button>
       </div>
