@@ -166,60 +166,53 @@ exportToPdf(): void {
   doc.setTextColor(100, 100, 100);
   doc.text(`Generado el: ${date}`, 14, 22);
 
-  // Tabla con datos (UUID, Lote, Fecha)
-  const tableData = this.generatedCodes.map(code => [
-    code.uuidCode,
-    code.batchNumber || 'N/A',
-    new Date(code.generatedAt).toLocaleString('es-ES')
-  ]);
+  // Preparar datos de la tabla
+  const tableData = this.generatedCodes.map(code => {
+    return ['', code.uuidCode, code.batchNumber || 'N/A',
+            new Date(code.generatedAt).toLocaleString('es-ES')];
+  });
 
+  // Agregar tabla con autoTable
   autoTable(doc, {
     startY: 30,
-    head: [['UUID', 'Número de Lote', 'Fecha de Generación']],
+    head: [['QR Code', 'UUID', 'Número de Lote', 'Fecha de Generación']],
     body: tableData,
     theme: 'grid',
     headStyles: { fillColor: [59, 130, 246], textColor: 255 },
     alternateRowStyles: { fillColor: [240, 240, 240] },
     margin: { top: 30 },
-    styles: { fontSize: 9, cellPadding: 2, overflow: 'linebreak' },
+    styles: {
+      fontSize: 9,
+      cellPadding: 3,
+      overflow: 'linebreak',
+      minCellHeight: 30 // Altura suficiente para el QR
+    },
     columnStyles: {
-      0: { cellWidth: 70 },
-      1: { cellWidth: 40 },
-      2: { cellWidth: 50 }
-    }
-  });
+      0: { cellWidth: 30 }, // Columna para QR
+      1: { cellWidth: 60 }, // UUID
+      2: { cellWidth: 35 }, // Lote
+      3: { cellWidth: 45 }  // Fecha
+    },
+    // Agregar imágenes QR en la primera columna
+    didDrawCell: (data) => {
+      if (data.column.index === 0 && data.cell.section === 'body') {
+        const code = this.generatedCodes[data.row.index];
+        if (code && code.qrDataUrl) {
+          // Calcular posición y tamaño para el QR
+          const qrSize = 25;
+          const centerX = data.cell.x + data.cell.width / 2;
+          const centerY = data.cell.y + data.cell.height / 2;
 
-  // === Agregar QR Codes debajo de la tabla ===
-  let y = (doc as any).lastAutoTable.finalY + 10; // arranca después de la tabla
-  const qrSize = 40; // tamaño del QR en el PDF
-  let x = 14; // margen izquierdo
-  const pageWidth = doc.internal.pageSize.getWidth();
-  const margin = 14;
-  const usableWidth = pageWidth - margin * 2;
-
-  this.generatedCodes.forEach((code, index) => {
-    if (code.qrDataUrl) {
-      // Insertar QR
-      doc.addImage(code.qrDataUrl, 'PNG', x, y, qrSize, qrSize);
-
-      // Texto debajo del QR
-      doc.setFontSize(8);
-      doc.text(code.uuidCode, x, y + qrSize + 4, { maxWidth: qrSize });
-
-      // Mover posición en X
-      x += qrSize + 10;
-
-      // Si no cabe, saltar a la siguiente fila
-      if (x + qrSize > pageWidth - margin) {
-        x = margin;
-        y += qrSize + 20;
-      }
-
-      // Si se pasa de la página, crear una nueva
-      if (y + qrSize > doc.internal.pageSize.getHeight() - margin) {
-        doc.addPage();
-        y = margin;
-        x = margin;
+          // Posicionar QR centrado en la celda
+          doc.addImage(
+            code.qrDataUrl,
+            'PNG',
+            centerX - qrSize/2,
+            centerY - qrSize/2,
+            qrSize,
+            qrSize
+          );
+        }
       }
     }
   });
