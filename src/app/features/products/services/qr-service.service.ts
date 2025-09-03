@@ -1,9 +1,10 @@
 // services/qr-service.service.ts
 import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
-import * as QRCode from 'qrcode'
+import * as QRCode from 'qrcode';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,34 +12,28 @@ export class QrService {
 
   constructor(private sanitizer: DomSanitizer) { }
 
-// En qr-service.service.ts
+  async generateHummingbirdQR(uuid: string): Promise<{ safeUrl: SafeUrl; dataUrl: string }> {
+    try {
+      const canvas = document.createElement('canvas');
+      await QRCode.toCanvas(canvas, uuid, {
+        width: 300,
+        margin: 1,
+        color: {
+          dark: '#1E40AF',
+          light: '#FFFFFF'
+        }
+      });
 
-async generateHummingbirdQR(uuid: string): Promise<{ safeUrl: SafeUrl; dataUrl: string }> {
-  try {
-    // Generar QR básico
-    const canvas = document.createElement('canvas');
-    await QRCode.toCanvas(canvas, uuid, {
-      width: 300,
-      margin: 1,
-      color: {
-        dark: '#1E40AF', // Azul oscuro
-        light: '#FFFFFF' // Fondo blanco
-      }
-    });
+      const shapedCanvas = this.applyHummingbirdShape(canvas);
+      const dataUrl = shapedCanvas.toDataURL('image/png');
+      const safeUrl = this.sanitizer.bypassSecurityTrustUrl(dataUrl);
 
-    // Aplicar forma de colibrí
-    const shapedCanvas = this.applyHummingbirdShape(canvas);
-
-    // Convertir a URL
-    const dataUrl = shapedCanvas.toDataURL('image/png');
-    const safeUrl = this.sanitizer.bypassSecurityTrustUrl(dataUrl);
-
-    return { safeUrl, dataUrl };
-  } catch (error) {
-    console.error('Error generating QR:', error);
-    throw error;
+      return { safeUrl, dataUrl };
+    } catch (error) {
+      console.error('Error generating QR:', error);
+      throw error;
+    }
   }
-}
 
   private applyHummingbirdShape(canvas: HTMLCanvasElement): HTMLCanvasElement {
     const ctx = canvas.getContext('2d');
@@ -53,14 +48,9 @@ async generateHummingbirdQR(uuid: string): Promise<{ safeUrl: SafeUrl; dataUrl: 
 
     if (!outputCtx) return canvas;
 
-    // Crear máscara de colibrí
     outputCtx.fillStyle = '#FFFFFF';
     outputCtx.fillRect(0, 0, width, height);
-
-    // Dibujar forma de colibrí (puedes usar una imagen SVG o dibujar la forma)
     this.drawHummingbirdSilhouette(outputCtx, width, height);
-
-    // Aplicar máscara al QR
     outputCtx.globalCompositeOperation = 'source-in';
     outputCtx.drawImage(canvas, 0, 0);
 
@@ -68,7 +58,6 @@ async generateHummingbirdQR(uuid: string): Promise<{ safeUrl: SafeUrl; dataUrl: 
   }
 
   private drawHummingbirdSilhouette(ctx: CanvasRenderingContext2D, width: number, height: number): void {
-    // Coordenadas aproximadas para la silueta de colibrí
     ctx.fillStyle = '#000000';
 
     // Cuerpo
@@ -98,44 +87,25 @@ async generateHummingbirdQR(uuid: string): Promise<{ safeUrl: SafeUrl; dataUrl: 
     ctx.fill();
   }
 
-  // Método alternativo usando imagen SVG
-  async generateHummingbirdQRWithSVG(uuid: string): Promise<SafeUrl> {
-    const canvas = document.createElement('canvas');
-    await QRCode.toCanvas(canvas, uuid, {
-      width: 300,
-      margin: 1
-    });
+  async exportMultipleQRCodes(codes: { uuid: string, dataUrl: string }[]): Promise<void> {
+    const zip = new JSZip();
 
-    // Cargar SVG de colibrí (debes tener este archivo en assets)
-    const hummingbirdSVG = await this.loadHummingbirdSVG();
-    const finalCanvas = await this.applySVGMask(canvas, hummingbirdSVG);
+    for (const code of codes) {
+      try {
+        // Convertir data URL a blob
+        const response = await fetch(code.dataUrl);
+        const blob = await response.blob();
+        zip.file(`qr-${code.uuid}.png`, blob);
+      } catch (error) {
+        console.error('Error processing QR code:', error);
+      }
+    }
 
-    const dataUrl = finalCanvas.toDataURL('image/png');
-    return this.sanitizer.bypassSecurityTrustUrl(dataUrl);
+    try {
+      const content = await zip.generateAsync({ type: 'blob' });
+      saveAs(content, 'qr-codes.zip');
+    } catch (error) {
+      console.error('Error creating ZIP file:', error);
+    }
   }
-
-  private async loadHummingbirdSVG(): Promise<string> {
-    // Cargar SVG desde assets
-    const response = await fetch('/assets/images/hummingbird.svg');
-    return await response.text();
-  }
-
-  private async applySVGMask(qrCanvas: HTMLCanvasElement, svgContent: string): Promise<HTMLCanvasElement> {
-    // Implementar aplicación de máscara SVG
-    // Esto es más complejo y requiere manipulación de SVG
-    return qrCanvas;
-  }
-
-  async exportMultipleQRCodes(codes: { uuid: string, qrCode: SafeUrl }[]): Promise<void> {
-  const zip = new JSZip();
-
-  for (const code of codes) {
-    const response = await fetch(code.qrCode.toString());
-    const blob = await response.blob();
-    zip.file(`qr-${code.uuid}.png`, blob);
-  }
-
-  const content = await zip.generateAsync({ type: 'blob' });
-  saveAs(content, 'qr-codes.zip');
-}
 }
