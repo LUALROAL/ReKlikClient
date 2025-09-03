@@ -148,45 +148,83 @@ export class ProductCodeGeneratorComponent implements OnInit {
     document.body.removeChild(link);
   }
 
-  exportToPdf(): void {
-    if (this.generatedCodes.length === 0) return;
+exportToPdf(): void {
+  if (this.generatedCodes.length === 0) return;
 
-    const productId = this.generatorForm.value.productId;
-    const product = this.products.find(p => p.id === productId);
-    const productName = product ? product.name : 'Producto';
+  const productId = this.generatorForm.value.productId;
+  const product = this.products.find(p => p.id === productId);
+  const productName = product ? product.name : 'Producto';
 
-    const doc = new jsPDF();
-    const title = `Códigos de Producto - ${productName}`;
-    const date = new Date().toLocaleDateString('es-ES');
+  const doc = new jsPDF();
+  const title = `Códigos de Producto - ${productName}`;
+  const date = new Date().toLocaleDateString('es-ES');
 
-    doc.setFontSize(18);
-    doc.text(title, 14, 15);
-    doc.setFontSize(11);
-    doc.setTextColor(100, 100, 100);
-    doc.text(`Generado el: ${date}`, 14, 22);
+  // Encabezado
+  doc.setFontSize(18);
+  doc.text(title, 14, 15);
+  doc.setFontSize(11);
+  doc.setTextColor(100, 100, 100);
+  doc.text(`Generado el: ${date}`, 14, 22);
 
-    const tableData = this.generatedCodes.map(code => [
-      code.uuidCode,
-      code.batchNumber || 'N/A',
-      new Date(code.generatedAt).toLocaleString('es-ES')
-    ]);
+  // Tabla con datos (UUID, Lote, Fecha)
+  const tableData = this.generatedCodes.map(code => [
+    code.uuidCode,
+    code.batchNumber || 'N/A',
+    new Date(code.generatedAt).toLocaleString('es-ES')
+  ]);
 
-    autoTable(doc, {
-      startY: 30,
-      head: [['UUID', 'Número de Lote', 'Fecha de Generación']],
-      body: tableData,
-      theme: 'grid',
-      headStyles: { fillColor: [59, 130, 246], textColor: 255 },
-      alternateRowStyles: { fillColor: [240, 240, 240] },
-      margin: { top: 30 },
-      styles: { fontSize: 9, cellPadding: 2, overflow: 'linebreak' },
-      columnStyles: {
-        0: { cellWidth: 70 },
-        1: { cellWidth: 40 },
-        2: { cellWidth: 40 }
+  autoTable(doc, {
+    startY: 30,
+    head: [['UUID', 'Número de Lote', 'Fecha de Generación']],
+    body: tableData,
+    theme: 'grid',
+    headStyles: { fillColor: [59, 130, 246], textColor: 255 },
+    alternateRowStyles: { fillColor: [240, 240, 240] },
+    margin: { top: 30 },
+    styles: { fontSize: 9, cellPadding: 2, overflow: 'linebreak' },
+    columnStyles: {
+      0: { cellWidth: 70 },
+      1: { cellWidth: 40 },
+      2: { cellWidth: 50 }
+    }
+  });
+
+  // === Agregar QR Codes debajo de la tabla ===
+  let y = (doc as any).lastAutoTable.finalY + 10; // arranca después de la tabla
+  const qrSize = 40; // tamaño del QR en el PDF
+  let x = 14; // margen izquierdo
+  const pageWidth = doc.internal.pageSize.getWidth();
+  const margin = 14;
+  const usableWidth = pageWidth - margin * 2;
+
+  this.generatedCodes.forEach((code, index) => {
+    if (code.qrDataUrl) {
+      // Insertar QR
+      doc.addImage(code.qrDataUrl, 'PNG', x, y, qrSize, qrSize);
+
+      // Texto debajo del QR
+      doc.setFontSize(8);
+      doc.text(code.uuidCode, x, y + qrSize + 4, { maxWidth: qrSize });
+
+      // Mover posición en X
+      x += qrSize + 10;
+
+      // Si no cabe, saltar a la siguiente fila
+      if (x + qrSize > pageWidth - margin) {
+        x = margin;
+        y += qrSize + 20;
       }
-    });
 
-    doc.save(`codigos-${productName.toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`);
-  }
+      // Si se pasa de la página, crear una nueva
+      if (y + qrSize > doc.internal.pageSize.getHeight() - margin) {
+        doc.addPage();
+        y = margin;
+        x = margin;
+      }
+    }
+  });
+
+  doc.save(`codigos-${productName.toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`);
+}
+
 }
