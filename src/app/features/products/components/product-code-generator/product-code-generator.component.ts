@@ -8,6 +8,8 @@ import { ProductService } from '../../services/product.service';
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { RouterModule } from '@angular/router';
+import { QrService } from '../../services/qr-service.service';
+import { DomSanitizer, SafeUrl } from '@angular/platform-browser';
 
 @Component({
   selector: 'app-product-code-generator',
@@ -19,18 +21,24 @@ import { RouterModule } from '@angular/router';
 export class ProductCodeGeneratorComponent implements OnInit {
 
   products: Product[] = [];
-  generatedCodes: ProductCode[] = [];
+  generatedCodes: (ProductCode & {
+    qrSafeUrl?: SafeUrl;
+    qrDataUrl?: string
+  })[] = [];
   generatorForm: FormGroup;
   isLoading = false;
   errorMessage = '';
+  generatingQR = false;
 
   constructor(
     private productService: ProductService,
-    private fb: FormBuilder
+    private qrService: QrService,
+    private fb: FormBuilder,
+    private sanitizer: DomSanitizer
   ) {
     this.generatorForm = this.fb.group({
       productId: [null, [Validators.required]],
-      quantity: [100, [Validators.required, Validators.min(1), Validators.max(10000)]],
+      quantity: [1, [Validators.required, Validators.min(1), Validators.max(10000)]],
       batchNumber: ['']
     });
   }
@@ -54,7 +62,7 @@ export class ProductCodeGeneratorComponent implements OnInit {
     });
   }
 
-  onGenerate(): void {
+  async onGenerate(): Promise<void> {
     if (this.generatorForm.invalid) {
       return;
     }
@@ -66,8 +74,21 @@ export class ProductCodeGeneratorComponent implements OnInit {
     const { productId, quantity, batchNumber } = this.generatorForm.value;
 
     this.productService.generateCodes(productId, { quantity, batchNumber }).subscribe({
-      next: (codes) => {
+      next: async (codes) => {
         this.generatedCodes = codes;
+
+        // Generar QR codes para cada código
+        this.generatingQR = true;
+        for (const code of this.generatedCodes) {
+          try {
+            const qrResult = await this.qrService.generateHummingbirdQR(code.uuidCode);
+            code.qrSafeUrl = qrResult.safeUrl;
+            code.qrDataUrl = qrResult.dataUrl;
+          } catch (error) {
+            console.error('Error generating QR for code:', code.uuidCode, error);
+          }
+        }
+        this.generatingQR = false;
         this.isLoading = false;
       },
       error: (err) => {
@@ -78,6 +99,27 @@ export class ProductCodeGeneratorComponent implements OnInit {
     });
   }
 
+
+  // Método para descargar QR individual
+ downloadQR(code: any): void {
+  if (!code.qrDataUrl) return;
+
+  const link = document.createElement('a');
+  link.href = code.qrDataUrl;
+  link.download = `qr-${code.uuidCode}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+}
+
+
+  // Método para exportar todos los QR en un ZIP
+  async exportAllQRCodes(): Promise<void> {
+    if (this.generatedCodes.length === 0) return;
+
+    // Necesitarías una librería como JSZip para esto
+    console.log('Exportar todos los QR codes (implementar con JSZip)');
+  }
   exportToCsv(): void {
     if (this.generatedCodes.length === 0) {
       return;
@@ -156,5 +198,19 @@ export class ProductCodeGeneratorComponent implements OnInit {
 
     // Guardar PDF
     doc.save(`codigos-${productName.toLowerCase()}-${new Date().toISOString().split('T')[0]}.pdf`);
+  }
+
+  private getUrlFromSafeUrl(safeUrl: SafeUrl): string | null {
+    // SafeUrl puede ser de diferentes tipos, necesitamos extraer la URL real
+    if (typeof safeUrl === 'string') {
+      return safeUrl;
+    }
+
+    // Si es un objeto, intentar acceder a la propiedad 'changingThisBreaksApplicationSecurity'
+    if (safeUrl && typeof safeUrl === 'object' && 'changingThisBreaksApplicationSecurity' in safeUrl) {
+      return (safeUrl as any).changingThisBreaksApplicationSecurity;
+    }
+
+    return null;
   }
 }
